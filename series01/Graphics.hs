@@ -19,6 +19,13 @@ data Color =
 
 -- Style
 data Style = Style Color
+    deriving Show
 
 -- Function
 styleToAttr :: Style -> String
+styleToAttr s = "stroke: " ++ show s ++ "; fill: " ++ show s ++ ";" 
+
+-- Constant
+defaultStyle :: Style
+defaultStyle = Style Black
+

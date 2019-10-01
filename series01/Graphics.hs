@@ -49,11 +49,16 @@ formToSVG :: Form -> String
         -- The cx and cy attributes define the x and y coordinates of the center of the circle. If cx and cy are omitted, the circle's center is set to (0,0)
         -- The r attribute defines the radius of the circle
     
-formToSVG (Rectangle (Point x1 y1) (Point x2 y2) style) =  "<rect x=" ++ show x1 ++ "y=" ++ show y1 ++ "width=" ++ show x2 ++ "height=" ++ show y2 ++ "style=" ++ show style ++ "/>"
-formToSVG (Circle (Point x1 y1) radius style) =  "<circle cx=" ++ show x1 ++ "cy=" ++ show y1 ++ "r=" ++ show radius ++ "style=" ++ show style ++ "/>"
+formToSVG (Rectangle (Point x1 y1) (Point x2 y2) style) =  "<rect x=" ++ show x1 ++ " y=" ++ show y1 ++ " width=" ++ show x2 ++ " height=" ++ show y2 ++ " style=" ++ show style ++ " />"
+formToSVG (Circle (Point x1 y1) radius style) =  "<circle cx= " ++ show x1 ++ " cy=" ++ show y1 ++ "r=" ++ show radius ++ " style=" ++ show style ++ " />"
 
 rectTest = Rectangle (Point 1.0 2.0) (Point 3.0 4.0) (Style Green)
 rectOutput = formToSVG rectTest
 circleTest = Circle (Point 3.0 4.0) 5.0 (Style Red)
 circleOutput = formToSVG circleTest
 
+-- toSVG
+toSVG :: Form -> String
+toSVG x = "<svg>" ++ (formToSVG x) ++ " </svg>"
+
+output = toSVG rectTest

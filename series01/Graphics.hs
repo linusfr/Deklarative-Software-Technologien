@@ -73,5 +73,9 @@ rectOutput2 = toSVG rectTest
 circleOutput2 = toSVG circleTest
 
 -- generate Graphics
--- rectangle :: Float → Float → Form 
+rectangle :: Float -> Float -> Form 
+rectangle x y = (Rectangle (Point 0 0) (Point x y) (defaultStyle))
+
+testtest = rectangle 10 20
+
 -- circle :: Float → Form

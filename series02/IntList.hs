@@ -23,11 +23,10 @@ appendList (Cons i is) l2  = Cons i (appendList is l2)
 -- deletes n elements
 -- if length(l) < n return l
 dropList :: Int -> IntList -> IntList
-dropList n l
-  | intListLength l < n = l
 dropList n (Cons j js)
-  | intListLength js + 1 > n = dropList (n - 1) js
-dropList n Nil = Nil
+  | n < intListLength (Cons j js) = Cons j js
+  | n >= intListLength (Cons j js) = dropList (n - 1) js
+  | js == Nil = Nil
 
 -- test
 list :: IntList

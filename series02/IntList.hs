@@ -27,6 +27,11 @@ dropList n (Cons j js)
   | n <= intListLength (Cons j js) = dropList (n - 1) js
   | n > intListLength (Cons j js) = Cons j js
 
+-- inserts n into the list after the fist non-null element
+joinList :: Int -> IntList -> IntList
+joinList n Nil         = Nil
+joinList n (Cons i is) = joinList n (Cons i (Cons n is))
+
 
 -- test
 list :: IntList
@@ -54,4 +59,5 @@ theLength :: Int
 theLength = intListLength list6
 
 newList :: IntList
+newList = joinList 0 list6
 

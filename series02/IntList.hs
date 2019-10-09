@@ -22,8 +22,8 @@ appendList (Cons i is) l2  = Cons i (appendList is l2)
 -- if length(l) < n return l
 dropList :: Int -> IntList -> IntList
 dropList n Nil = Nil
+dropList 0 l = l
 dropList n (Cons j js)
-  | n == 0 = Cons j js
   | n <= intListLength (Cons j js) = dropList (n - 1) js
   | n > intListLength (Cons j js) = Cons j js
 

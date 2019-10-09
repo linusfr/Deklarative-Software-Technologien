@@ -1,5 +1,3 @@
-{-# LANGUAGE TemplateHaskell #-}
-
 module IntList where
 
 data IntList
@@ -23,10 +21,12 @@ appendList (Cons i is) l2  = Cons i (appendList is l2)
 -- deletes n elements
 -- if length(l) < n return l
 dropList :: Int -> IntList -> IntList
+dropList n Nil = Nil
 dropList n (Cons j js)
-  | n < intListLength (Cons j js) = Cons j js
-  | n >= intListLength (Cons j js) = dropList (n - 1) js
-  | js == Nil = Nil
+  | n == 0 = Cons j js
+  | n <= intListLength (Cons j js) = dropList (n - 1) js
+  | n > intListLength (Cons j js) = Cons j js
+
 
 -- test
 list :: IntList
@@ -54,5 +54,4 @@ theLength :: Int
 theLength = intListLength list6
 
 newList :: IntList
--- newList = appendList list3 list6
-newList = dropList 1 list6
+

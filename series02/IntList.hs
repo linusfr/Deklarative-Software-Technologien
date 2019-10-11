@@ -15,7 +15,6 @@ sumList (Cons i is) = i + sumList is
 
 appendList :: IntList -> IntList -> IntList
 appendList Nil l2         = l2
-appendList Nil Nil        = Nil
 appendList (Cons i is) l2 = Cons i (appendList is l2)
 
 -- deletes n elements

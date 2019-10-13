@@ -34,7 +34,7 @@ translate _ _ GraphicNil = GraphicNil
 translate x y (Graphic f fs) = Graphic (translateForm x y f) (translate x y fs)
 
 data BoundingBox
-  = GraphicBoundingBoxNil
+  = BoundingBoxNil
   | BoundingBox Point Point
 
 union :: BoundingBox -> BoundingBox -> BoundingBox
@@ -42,9 +42,10 @@ union (BoundingBox (Point x1 y1) (Point x2 y2)) (BoundingBox (Point x3 y3) (Poin
   BoundingBox
     (Point (min (min x1 x2) (min x3 x4)) (min (min y1 y2) (min y3 y4)))
     (Point (max (max x1 x2) (max x3 x4)) (max (max y1 y2) (max y3 y4)))
+union _ _ = BoundingBoxNil
 
 boundingBox :: Graphic -> BoundingBox
-boundingBox GraphicNil = GraphicBoundingBoxNil
+boundingBox GraphicNil = BoundingBoxNil
 boundingBox (Graphic (Circle (Point pX pY) f _) fs) =
   union
     (BoundingBox (Point (pX - f) (pY - f)) (Point (pX + f) (pY + f)))
@@ -59,14 +60,38 @@ g1 === g2 =
    in g1 +++ translate 0 (y2 - y3) g2
 
 atop :: Graphic -> Graphic -> Graphic
-atop g1 g2 =
-  let BoundingBox (Point x1 y1) (Point x2 y2) = boundingBox g1
-      BoundingBox (Point x3 y3) (Point x4 y4) = boundingBox g2
-   in g1 +++
-      translate
-        (((x1 + x2) / 2) - ((x3 + x4) / 2) + ((x3 + x4) / 2))
-        (y2 - y3)
-        g2
+atop (Graphic f fs) (Graphic j js) =
+  let BoundingBox (Point x1 y1) (Point x2 y2) = boundingBox (Graphic f fs)
+      BoundingBox (Point x3 y3) (Point x4 y4) = boundingBox (Graphic j js)
+   in let epiCenter1 = Point (x2 - x1) (y2 - y1)
+          epiCenter2 = Point (x4 - x3) (y4 - y3)
+       in translate
+            (((x4 - x3) / 2) - ((x2 - x1) / 2) - ((x4 - x3) / 2))
+            (((y4 - y3) / 2) - ((y2 - y1) / 2) - ((y4 - y3) / 2))
+            (Graphic j js)
+atop _ _ = GraphicNil
+
+redCircle :: Graphic
+redCircle = (Graphic ((Circle (Point 30 30) 20 (Style Red))) GraphicNil)
+
+yellowCircle :: Graphic
+yellowCircle = (Graphic ((Circle (Point 0 0) 20 (Style Yellow))) GraphicNil)
+
+greenCircle :: Graphic
+greenCircle = (Graphic ((Circle (Point 0 0) 20 (Style Green))) GraphicNil)
+
+circles :: Graphic
+circles = redCircle === yellowCircle === greenCircle
+
+bg :: Graphic
+bg =
+  (Graphic ((Rectangle (Point 30 30) (Point 30 70) (Style Black))) GraphicNil)
+
+light :: Graphic
+light = atop bg circles
+
+createLight :: IO ()
+createLight = writeFile "light.svg" (toSVG light)
 
 ----------------------------------------------------------------------------------------------------------------
 -- Graphics --> from series01 adapted for series02
@@ -128,27 +153,23 @@ formToSVG (Circle (Point x1 y1) radius style) =
 
 -- toSVG --> xmnls neccessary for the styles to be interpreted
 toSVG :: Graphic -> String
-toSVG (Graphic (Rectangle (Point x1 y1) (Point x2 y2) (Style style)) _) =
-  "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"" ++
-  show (x1 + x2) ++
-  "\" height=\"" ++
-  show (y1 + y2) ++
-  "\">\n\t" ++
-  formToSVG (Rectangle (Point x1 y1) (Point x2 y2) (Style style)) ++ "\n</svg>"
-toSVG (Graphic (Circle (Point x1 y1) radius (Style style)) _) =
-  "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"" ++
-  show (radius * 2 + 2) ++
-  "\" height=\"" ++
-  show (radius * 2 + 2) ++
-  "\">\n\t" ++
-  formToSVG (Circle (Point radius radius) radius (Style style)) ++ "\n</svg>"
-    -- Rectangle
+toSVG (Graphic f fs) = (formToSVG f) ++ (toSVG fs)
+toSVG GraphicNil     = ""
 
--- generate Forms
-rectangle :: Float -> Float -> Graphic
-rectangle x y =
-  Graphic (Rectangle (Point 0 0) (Point x y) defaultStyle) GraphicNil
-    -- Circle
-
-circle :: Float -> Graphic
-circle radius = Graphic (Circle (Point 0 0) radius defaultStyle) GraphicNil
+test :: String
+test = (toSVG light)
+-- Rectangle
+--    "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"" ++
+--       show (x1 + x2) ++
+--       "\" height=\"" ++
+--       show (y1 + y2) ++
+--       "\">\n\t" ++
+--       formToSVG (Rectangle (Point x1 y1) (Point x2 y2) (Style style)) ++
+--       "\n</svg>"
+-- toSVG (Graphic (Circle (Point x1 y1) radius (Style style)) _) =
+--   "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"" ++
+--   show (radius * 2 + 2) ++
+--   "\" height=\"" ++
+--   show (radius * 2 + 2) ++
+--   "\">\n\t" ++
+--   formToSVG (Circle (Point radius radius) radius (Style style)) ++ "\n</svg>"

@@ -6,9 +6,11 @@ data Graphic
   = GraphicNil
   | Graphic Form Graphic
 
+-- transform one Form into a Graphic
 single :: Form -> Graphic
 single form = Graphic form GraphicNil
 
+-- combined two Graphic´s into one
 (+++) :: Graphic -> Graphic -> Graphic
 (Graphic f1 g1) +++ g2 = Graphic f1 (g1 +++ g2)
 GraphicNil +++ g = g
@@ -34,16 +36,19 @@ translate _ _ GraphicNil = GraphicNil
 translate x y (Graphic f fs) = Graphic (translateForm x y f) (translate x y fs)
 
 data BoundingBox
-  = BoundingBoxNil
+  = BoundingBoxNil 
   | BoundingBox Point Point
 
+-- combined two BoundingBox into one BoundingBox, included the size of both
 union :: BoundingBox -> BoundingBox -> BoundingBox
+union BoundingBoxNil b2 = b2
+union b1 BoundingBoxNil = b1
 union (BoundingBox (Point x1 y1) (Point x2 y2)) (BoundingBox (Point x3 y3) (Point x4 y4)) =
   BoundingBox
     (Point (min (min x1 x2) (min x3 x4)) (min (min y1 y2) (min y3 y4)))
     (Point (max (max x1 x2) (max x3 x4)) (max (max y1 y2) (max y3 y4)))
-union _ _ = BoundingBoxNil
 
+-- created a BoundingBox over a Graphic
 boundingBox :: Graphic -> BoundingBox
 boundingBox GraphicNil = BoundingBoxNil
 boundingBox (Graphic (Circle (Point pX pY) f _) fs) =
@@ -53,45 +58,26 @@ boundingBox (Graphic (Circle (Point pX pY) f _) fs) =
 boundingBox (Graphic (Rectangle (Point x1 y1) (Point x2 y2) _) fs) =
   union (BoundingBox (Point x1 y1) (Point (x1 + x2) (y1 + y2))) (boundingBox fs)
 
+-- creates a new Graphic underneath each other
 (===) :: Graphic -> Graphic -> Graphic
+(GraphicNil) === (Graphic f fs) = (Graphic f fs)
+(Graphic f fs) === (GraphicNil) = (Graphic f fs)
+(GraphicNil) === (GraphicNil) = GraphicNil
 g1 === g2 =
   let BoundingBox (Point x1 y1) (Point x2 y2) = boundingBox g1
       BoundingBox (Point x3 y3) (Point x4 y4) = boundingBox g2
-   in g1 +++ translate 0 (y2 - y3) g2
+   in g1 +++ translate ((x1-x3)-((x1-x2)/2)+((x3-x4)/2)) (y2 - y3) g2
 
+-- center two Graphics over each other
 atop :: Graphic -> Graphic -> Graphic
 atop (Graphic f fs) (Graphic j js) =
   let BoundingBox (Point x1 y1) (Point x2 y2) = boundingBox (Graphic f fs)
       BoundingBox (Point x3 y3) (Point x4 y4) = boundingBox (Graphic j js)
-   in let epiCenter1 = Point (x2 - x1) (y2 - y1)
-          epiCenter2 = Point (x4 - x3) (y4 - y3)
-       in translate
-            (((x4 - x3) / 2) - ((x2 - x1) / 2) - ((x4 - x3) / 2))
-            (((y4 - y3) / 2) - ((y2 - y1) / 2) - ((y4 - y3) / 2))
-            (Graphic j js)
+    in (Graphic f fs) +++ (translate
+        ((x1-x3)-((x1-x2)/2)+((x3-x4)/2))
+        ((y1-y3) -((y1-y2)/2)-((y4-y3)/2))
+        (Graphic j js))
 atop _ _ = GraphicNil
-
-redCircle :: Graphic
-redCircle = (Graphic ((Circle (Point 30 30) 20 (Style Red))) GraphicNil)
-
-yellowCircle :: Graphic
-yellowCircle = (Graphic ((Circle (Point 0 0) 20 (Style Yellow))) GraphicNil)
-
-greenCircle :: Graphic
-greenCircle = (Graphic ((Circle (Point 0 0) 20 (Style Green))) GraphicNil)
-
-circles :: Graphic
-circles = redCircle === yellowCircle === greenCircle
-
-bg :: Graphic
-bg =
-  (Graphic ((Rectangle (Point 30 30) (Point 30 70) (Style Black))) GraphicNil)
-
-light :: Graphic
-light = atop bg circles
-
-createLight :: IO ()
-createLight = writeFile "light.svg" (toSVG light)
 
 ----------------------------------------------------------------------------------------------------------------
 -- Graphics --> from series01 adapted for series02
@@ -151,25 +137,18 @@ formToSVG (Circle (Point x1 y1) radius style) =
   show (y1 + 1) ++
   "\" r=\"" ++ show radius ++ "\" " ++ styleToAttr style ++ "/>"
 
--- toSVG --> xmnls neccessary for the styles to be interpreted
+-- toSVG --> create the xml-code for all Forms in Graphic
 toSVG :: Graphic -> String
 toSVG (Graphic f fs) = (formToSVG f) ++ (toSVG fs)
 toSVG GraphicNil     = ""
 
-test :: String
-test = (toSVG light)
--- Rectangle
---    "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"" ++
---       show (x1 + x2) ++
---       "\" height=\"" ++
---       show (y1 + y2) ++
---       "\">\n\t" ++
---       formToSVG (Rectangle (Point x1 y1) (Point x2 y2) (Style style)) ++
---       "\n</svg>"
--- toSVG (Graphic (Circle (Point x1 y1) radius (Style style)) _) =
---   "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"" ++
---   show (radius * 2 + 2) ++
---   "\" height=\"" ++
---   show (radius * 2 + 2) ++
---   "\">\n\t" ++
---   formToSVG (Circle (Point radius radius) radius (Style style)) ++ "\n</svg>"
+-- svgBorder --> creates the svg-Label around the xml-code, xmnls neccessary for the styles to be interpreted
+svgBorder :: String -> String
+svgBorder allGraphics = "<svg xmlns=\"http://www.w3.org/2000/svg\">\n\t" ++ allGraphics ++"\n</svg>"
+
+rectangle :: Float -> Float -> Graphic
+rectangle width height =
+  Graphic (Rectangle (Point 0 0) (Point width height) defaultStyle) GraphicNil  
+
+circle :: Float -> Graphic
+circle radius = Graphic (Circle (Point radius radius) radius defaultStyle) GraphicNil

@@ -12,8 +12,8 @@ single form = Graphic form GraphicNil
 
 -- combined two Graphic´s into one
 (+++) :: Graphic -> Graphic -> Graphic
-(Graphic f1 g1) +++ g2 = Graphic f1 (g1 +++ g2)
 GraphicNil +++ g = g
+(Graphic f1 g1) +++ g2 = Graphic f1 (g1 +++ g2)
 
 -- changes color of the graphic -> every form in graphic
 colored :: Color -> Graphic -> Graphic
@@ -36,7 +36,7 @@ translate _ _ GraphicNil = GraphicNil
 translate x y (Graphic f fs) = Graphic (translateForm x y f) (translate x y fs)
 
 data BoundingBox
-  = BoundingBoxNil 
+  = BoundingBoxNil
   | BoundingBox Point Point
 
 -- combined two BoundingBox into one BoundingBox, included the size of both
@@ -66,17 +66,19 @@ boundingBox (Graphic (Rectangle (Point x1 y1) (Point x2 y2) _) fs) =
 g1 === g2 =
   let BoundingBox (Point x1 y1) (Point x2 y2) = boundingBox g1
       BoundingBox (Point x3 y3) (Point x4 y4) = boundingBox g2
-   in g1 +++ translate ((x1-x3)-((x1-x2)/2)+((x3-x4)/2)) (y2 - y3) g2
+   in g1 +++
+      translate ((x1 - x3) - ((x1 - x2) / 2) + ((x3 - x4) / 2)) (y2 - y3) g2
 
 -- center two Graphics over each other
 atop :: Graphic -> Graphic -> Graphic
 atop (Graphic f fs) (Graphic j js) =
   let BoundingBox (Point x1 y1) (Point x2 y2) = boundingBox (Graphic f fs)
       BoundingBox (Point x3 y3) (Point x4 y4) = boundingBox (Graphic j js)
-    in (Graphic f fs) +++ (translate
-        ((x1-x3)-((x1-x2)/2)+((x3-x4)/2))
-        ((y1-y3) -((y1-y2)/2)-((y4-y3)/2))
-        (Graphic j js))
+   in (Graphic f fs) +++
+      (translate
+         ((x1 - x3) - ((x1 - x2) / 2) + ((x3 - x4) / 2))
+         ((y1 - y3) - ((y1 - y2) / 2) - ((y4 - y3) / 2))
+         (Graphic j js))
 atop _ _ = GraphicNil
 
 ----------------------------------------------------------------------------------------------------------------
@@ -144,11 +146,13 @@ toSVG GraphicNil     = ""
 
 -- svgBorder --> creates the svg-Label around the xml-code, xmnls neccessary for the styles to be interpreted
 svgBorder :: String -> String
-svgBorder allGraphics = "<svg xmlns=\"http://www.w3.org/2000/svg\">\n\t" ++ allGraphics ++"\n</svg>"
+svgBorder allGraphics =
+  "<svg xmlns=\"http://www.w3.org/2000/svg\">\n\t" ++ allGraphics ++ "\n</svg>"
 
 rectangle :: Float -> Float -> Graphic
 rectangle width height =
-  Graphic (Rectangle (Point 0 0) (Point width height) defaultStyle) GraphicNil  
+  Graphic (Rectangle (Point 0 0) (Point width height) defaultStyle) GraphicNil
 
 circle :: Float -> Graphic
-circle radius = Graphic (Circle (Point radius radius) radius defaultStyle) GraphicNil
+circle radius =
+  Graphic (Circle (Point radius radius) radius defaultStyle) GraphicNil

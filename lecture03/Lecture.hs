@@ -124,4 +124,7 @@ safeHead :: [a] -> Maybe a
 safeHead [] = Nothing
 safeHead (x : _) = Just x
 
-    
+test xs = 
+    case safeHead xs of 
+        Nothing -> "Fehler"
+        Just x -> show x

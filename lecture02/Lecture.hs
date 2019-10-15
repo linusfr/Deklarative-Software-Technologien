@@ -1,16 +1,16 @@
 -- PatternMatching
 workday2 :: Weekday -> Bool
 workday Saturday = False
-workday Sunday = False
-workday _ = True
+workday Sunday   = False
+workday _        = True
 
 -- case-Ausdruck (andere Art Pattern Matching zu schreiben)
 workday2 :: Weekday -> Bool
 workday2 w =
   case w of
     Saturday -> False
-    Sunday -> False
-    _ -> True
+    Sunday   -> False
+    _        -> True
 
 -- Guards (quasi wie switch case in Java, kein = vor erstem guard)
 even :: Int -> Bool
@@ -37,13 +37,13 @@ list3 :: IntList
 list3 = Cons 1 (Cons 2 Nil)
 
 intListLength :: IntList -> Int
-intListLength Nil = 0
+intListLength Nil         = 0
 intListLength (Cons _ is) = 1 + intListLength is --recursive call, +1 because we lost one Cons
 
 --function that shows every second element in the list
 everySecond :: IntList -> IntList
-everySecond Nil = Nil -- check if list is empty
-everySecond (Cons _ Nil) = Nil -- check if list has a single element
+everySecond Nil                  = Nil -- check if list is empty
+everySecond (Cons _ Nil)         = Nil -- check if list has a single element
 everySecond (Cons i (Cons j js)) = Cons j (everySecond js) -- check if list has minimum of two elements, returns new list of second elements
 
 -- Baum
@@ -79,16 +79,16 @@ find n (Node lt m rt)
   | n > m = find n rt
 
 absAll :: IntList -> IntList -- in einer Liste von jedem Element den Absolutbetrag |x| berechnen und in neue Liste schreiben
-absAll Nil = Nil
+absAll Nil         = Nil
 absAll (Cons i is) = Cons (abs i) (absAll is)
 
 list11 :: IntList
 list11 = Cons (-1) (Cons (-2) (Cons (-23) Nil))
 
 incAll :: IntList -> IntList -- jedes Element um eins erhöhen
-incAll Nil = Nil
+incAll Nil         = Nil
 incAll (Cons i is) = Cons (i + 1) (incAll is)
 
 squareAll :: IntList -> IntList -- Elemente quadrieren
-squareAll Nil = Nil
+squareAll Nil         = Nil
 squareAll (Cons i is) = Cons (i * i) (squareAll is)

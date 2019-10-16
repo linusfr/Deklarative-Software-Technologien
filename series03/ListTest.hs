@@ -20,3 +20,6 @@ test2 = isPrefixOfString string string2
 
 test3 :: String
 test3 = reverseList string2
+
+test4 :: [Int]
+test4 = 1 : 2 : [3]

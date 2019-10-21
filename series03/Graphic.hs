@@ -29,6 +29,21 @@ translate x y (f:fs) = (translateForm x y f) : (translate x y fs)
 data BoundingBox
   = BoundingBoxNil
   | BoundingBox Point Point
+  deriving (Show)
+
+test :: [BoundingBox] 
+test = [BoundingBox (Point 1 2) (Point 2 3), BoundingBox (Point 1 2) (Point 2 3), BoundingBox (Point 4 4) (Point 8 8)]
+
+boundingBox :: Graphic -> BoundingBox
+boundingBox [] = BoundingBoxNil
+boundingBox ((Circle (Point pX pY) f _):fs)=
+  unions ((BoundingBox (Point (pX - f) (pY - f)) (Point (pX + f) (pY + f))):(boundingBox fs):[]) 
+boundingBox ((Rectangle (Point x1 y1) (Point x2 y2) _):fs) =
+  unions ((BoundingBox (Point x1 y1) (Point (x1 + x2) (y1 + y2))):(boundingBox fs):[])
+
+unions :: [BoundingBox] -> BoundingBox
+unions [] = BoundingBoxNil
+unions (b:bs) = union b (unions bs) 
 
 -- -- combined two BoundingBox into one BoundingBox, included the size of both
 union :: BoundingBox -> BoundingBox -> BoundingBox
@@ -38,16 +53,6 @@ union (BoundingBox (Point x1 y1) (Point x2 y2)) (BoundingBox (Point x3 y3) (Poin
   BoundingBox
     (Point (min (min x1 x2) (min x3 x4)) (min (min y1 y2) (min y3 y4)))
     (Point (max (max x1 x2) (max x3 x4)) (max (max y1 y2) (max y3 y4)))
-
--- -- created a BoundingBox over a Graphic
-boundingBox :: Graphic -> BoundingBox
-boundingBox [] = BoundingBoxNil
-boundingBox ((Circle (Point pX pY) f _):fs) =
-  union
-    (BoundingBox (Point (pX - f) (pY - f)) (Point (pX + f) (pY + f)))
-    (boundingBox fs)
-boundingBox ((Rectangle (Point x1 y1) (Point x2 y2) _):fs) =
-  union (BoundingBox (Point x1 y1) (Point (x1 + x2) (y1 + y2))) (boundingBox fs)
 
 -- -- creates a new Graphic underneath each other
 (===) :: Graphic -> Graphic -> Graphic
@@ -103,7 +108,7 @@ toLower Yellow = "yellow"
 -- Style
 data Style =
   Style Color
-  deriving (Show) -- -- Function
+  deriving (Show)
 
 styleToAttr :: Style -> String
 styleToAttr (Style s) =

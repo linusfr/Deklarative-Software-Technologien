@@ -9,10 +9,15 @@ single :: Form -> Graphic
 single form = [form]
 
 -- -- changes color of the graphic -> every form in graphic
-colored :: Color -> Graphic -> Graphic
-colored _ [] = []
-colored c ((Rectangle p1 p2 _):fs) = Rectangle p1 p2 (Style c) : (colored c fs)
-colored c ((Circle p f _):fs) = (Circle p f (Style c)) : (colored c fs)
+--    changed to a map Function
+
+colored :: Color -> Form -> Form
+colored c (Rectangle p1 p2 _) = Rectangle p1 p2 (Style c) 
+colored c ((Circle p f _)) = (Circle p f (Style c))
+
+recolor :: (Color -> Form -> Form) -> Color -> Graphic -> Graphic
+recolor _ _ [] = []
+recolor colorIt color (f:fs) = colorIt color f : (recolor colorIt  color fs)
 
 -- -- takes two floats and a point and translates the point by the floats values
 translatePoint :: Float -> Float -> Point -> Point
@@ -24,15 +29,12 @@ translateForm x y (Circle p f s)      = Circle (translatePoint x y p) f s
 
 translate :: Float -> Float -> Graphic -> Graphic
 translate _ _ []     = []
-translate x y (f:fs) = (translateForm x y f) : (translate x y fs)
+translate x y (f:fs) = (translateForm x y f) : (translate x y fs) 
 
 data BoundingBox
   = BoundingBoxNil
   | BoundingBox Point Point
   deriving (Show)
-
-test :: [BoundingBox] 
-test = [BoundingBox (Point 1 2) (Point 2 3), BoundingBox (Point 1 2) (Point 2 3), BoundingBox (Point 4 4) (Point 8 8)]
 
 boundingBox :: Graphic -> BoundingBox
 boundingBox [] = BoundingBoxNil
@@ -135,9 +137,10 @@ formToSVG (Circle (Point x1 y1) radius style) =
   "\" r=\"" ++ show radius ++ "\" " ++ styleToAttr style ++ "/>"
 
 -- toSVG --> create the xml-code for all Forms in Graphic
-toSVG :: Graphic -> String
-toSVG (f:fs) = (formToSVG f) ++ (toSVG fs)
-toSVG []     = ""
+toSVG :: (Form -> String) -> Graphic -> String
+toSVG fToSVG (f:fs) = (fToSVG f) ++ (toSVG fToSVG fs)
+toSVG _ []     = ""
+
 
 -- svgBorder --> creates the svg-Label around the xml-code, xmnls neccessary for the styles to be interpreted
 svgBorder :: String -> String

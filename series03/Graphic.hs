@@ -10,15 +10,15 @@ single form = [form]
 
 -- -- changes color of the graphic -> every form in graphic
 --    changed to a map Function
-
 colored :: Color -> Form -> Form
-colored c (Rectangle p1 p2 _) = Rectangle p1 p2 (Style c) 
-colored c ((Circle p f _)) = (Circle p f (Style c))
+colored c (Rectangle p1 p2 _) = Rectangle p1 p2 (Style c)
+colored c ((Circle p f _))    = (Circle p f (Style c))
 
 recolor :: (Color -> Form -> Form) -> Color -> Graphic -> Graphic
-recolor _ _ [] = []
-recolor colorIt color (f:fs) = colorIt color f : (recolor colorIt  color fs)
+recolor _ _ []               = []
+recolor colorIt color (f:fs) = map (colorIt color) (f : fs)
 
+--  colorIt color f : (recolor colorIt  color fs)
 -- -- takes two floats and a point and translates the point by the floats values
 translatePoint :: Float -> Float -> Point -> Point
 translatePoint x y (Point pX pY) = Point (pX + x) (pY + y)
@@ -29,7 +29,7 @@ translateForm x y (Circle p f s)      = Circle (translatePoint x y p) f s
 
 translate :: Float -> Float -> Graphic -> Graphic
 translate _ _ []     = []
-translate x y (f:fs) = (translateForm x y f) : (translate x y fs) 
+translate x y (f:fs) = (translateForm x y f) : (translate x y fs)
 
 data BoundingBox
   = BoundingBoxNil
@@ -38,14 +38,18 @@ data BoundingBox
 
 boundingBox :: Graphic -> BoundingBox
 boundingBox [] = BoundingBoxNil
-boundingBox ((Circle (Point pX pY) f _):fs)=
-  unions ((BoundingBox (Point (pX - f) (pY - f)) (Point (pX + f) (pY + f))):(boundingBox fs):[]) 
+boundingBox ((Circle (Point pX pY) f _):fs) =
+  unions
+    ((BoundingBox (Point (pX - f) (pY - f)) (Point (pX + f) (pY + f))) :
+     (boundingBox fs) : [])
 boundingBox ((Rectangle (Point x1 y1) (Point x2 y2) _):fs) =
-  unions ((BoundingBox (Point x1 y1) (Point (x1 + x2) (y1 + y2))):(boundingBox fs):[])
+  unions
+    ((BoundingBox (Point x1 y1) (Point (x1 + x2) (y1 + y2))) :
+     (boundingBox fs) : [])
 
 unions :: [BoundingBox] -> BoundingBox
-unions [] = BoundingBoxNil
-unions (b:bs) = union b (unions bs) 
+unions []     = BoundingBoxNil
+unions (b:bs) = union b (unions bs)
 
 -- -- combined two BoundingBox into one BoundingBox, included the size of both
 union :: BoundingBox -> BoundingBox -> BoundingBox
@@ -139,8 +143,7 @@ formToSVG (Circle (Point x1 y1) radius style) =
 -- toSVG --> create the xml-code for all Forms in Graphic
 toSVG :: (Form -> String) -> Graphic -> String
 toSVG fToSVG (f:fs) = (fToSVG f) ++ (toSVG fToSVG fs)
-toSVG _ []     = ""
-
+toSVG _ []          = ""
 
 -- svgBorder --> creates the svg-Label around the xml-code, xmnls neccessary for the styles to be interpreted
 svgBorder :: String -> String

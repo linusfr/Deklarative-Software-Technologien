@@ -1,14 +1,32 @@
 module SVG where
 
+-------------------------------------------------------------
+-- Attr
+-------------------------------------------------------------
 data Attr =
   Attr String String
   deriving (Show)
 
+-------------------------------------------------------------
+-- XML
+-------------------------------------------------------------
 data XML
   = Tag String [Attr] [XML]
   | TextNode String
   deriving (Show)
 
+-------------------------------------------------------------
+-- given HTML represented with the data types
+-------------------------------------------------------------
+--  <html>
+--      <head>
+--          <title>Page Title</title>
+--      </head>
+--      <body class="content" id="main">
+--          <h1>A Heading</h1>
+--          <p>A paragraph</p>
+--      </body>
+--  </html>
 wantedDocument =
   (Tag
      "html"
@@ -21,3 +39,8 @@ wantedDocument =
           , Tag "p" [] [TextNode "A paragraph"]
           ])
      ])
+
+-------------------------------------------------------------
+-- pretty
+-------------------------------------------------------------
+pretty :: XML -> String

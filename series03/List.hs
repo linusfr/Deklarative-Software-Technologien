@@ -20,11 +20,12 @@ allList f (a:as)
   | f a = allList f as
   | otherwise = False
 
+-- d) reverseList
 reverseList :: [a] -> [a]
 reverseList []     = []
 reverseList (a:as) = appendList (reverseList as) (a : [])
 
--- d) lookupList
+-- e) lookupList
 lookupList :: (a -> Bool) -> [a] -> Maybe a
 lookupList _ [] = Nothing
 lookupList f (a:as)

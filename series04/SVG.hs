@@ -89,3 +89,8 @@ createHtmlFile = writeFile "wantedHTML.html" xmlAsString
 
 createHtmlFile' :: IO ()
 createHtmlFile' = writeFile "wantedHTML'.html" xmlAsString
+
+createAll :: IO ()
+createAll = do
+  createHtmlFile
+  createHtmlFile'

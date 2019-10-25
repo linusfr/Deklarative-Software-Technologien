@@ -32,6 +32,16 @@ lookupList f (a:as)
   | otherwise = lookupList f as
 
 -------------------------------------------------------------
+-- lookupKey - version 3
+-------------------------------------------------------------
+lookupKeyThree :: Eq k => (k -> k -> Bool) -> k -> [(k, v)] -> Maybe v
+lookupKeyThree f givenKey l =
+  let maybe = lookupList (\(listKey, v) -> f listKey givenKey) l
+   in case maybe of
+        Just (k, v) -> Just v
+        Nothing     -> Nothing
+
+-------------------------------------------------------------
 -- andList - version 1
 -------------------------------------------------------------
 andListOne :: [Bool] -> Bool

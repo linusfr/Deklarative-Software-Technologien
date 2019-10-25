@@ -43,4 +43,8 @@ wantedDocument =
 -------------------------------------------------------------
 -- pretty
 -------------------------------------------------------------
+-- use map, concat and unwords to create a string representation of the original html string
 pretty :: XML -> String
+pretty (TextNode s) = s
+pretty (Tag s as xs) =
+  "<" ++ s ++ (unwords as) ">" ++ (map pretty xs) "<" ++ s ++ "/>"

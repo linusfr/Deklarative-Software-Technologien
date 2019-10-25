@@ -18,20 +18,18 @@ isIdentical k1 k2
 -------------------------------------------------------------
 -- lookupKey - version 2
 -------------------------------------------------------------
-lookupKeyTwo :: (k -> k -> Bool) -> k -> [(k, v)] -> Maybe v
-lookupKeyTwo f y ((k, v):bs) =
-  if (lookupList (\x -> (f y x)) (map (\(k, v) -> v) ((k, v) : bs))) == Just k
-    then map (\(k, v) -> Just v) (filter (\k -> k == y) [(k, v)])
-    else Nothing
-
---
---
-lookupList :: (a -> Bool) -> [a] -> Maybe a
-lookupList _ [] = Nothing
-lookupList f (a:as)
-  | f a = Just a
-  | otherwise = lookupList f as
-
+-- lookupKeyTwo :: (k -> k -> Bool) -> k -> [(k, v)] -> Maybe v
+-- lookupKeyTwo f y ((k, v):bs) =
+--   if (lookupList (\x -> (f y x)) (map (\(k, v) -> k) ((k, v) : bs))) == Just k
+--     then map (\(k, v) -> Just v) (filter (\k -> k == y) [(k, v)])
+--     else Nothing
+-- keyEquals :: k -> k -> Bool
+-- keyEquals k1 k2 = k1 == k2
+-- lookupList :: (a -> Bool) -> [a] -> Maybe a
+-- lookupList _ [] = Nothing
+-- lookupList f (a:as)
+--   | f a = Just a
+--   | otherwise = lookupList f as
 -------------------------------------------------------------
 -- andList - version 1
 -------------------------------------------------------------

@@ -45,12 +45,13 @@ add x y = x + y
 -- exps4 = isMatching (\x y -> x == y) 10 [1 .. 20]
 ---------------------------------------------------------------------------
 ---------------------------------------------------------------------------
--- lookupItem :: (Int -> Bool) -> [Int] -> Int
--- lookupItem _ [] = 0
--- lookupItem f (i:is)
---   | f i = i
---   | otherwise = lookupItem f is
--- ---------------------------------------------------------------------------
+lookupItem :: (Int -> Bool) -> [Int] -> Int
+lookupItem _ [] = 0
+lookupItem f (i:is)
+  | f i = i
+  | otherwise = lookupItem f is
+
+---------------------------------------------------------------------------
 -- isMatching :: (Int -> Int -> Bool) -> Int -> [(Int, String)] -> Int
 -- isMatching f x l =
 --   (filter (\y -> y == (lookupItem (\y -> (f x y)) l)) (map (\(k, v) -> k) l)) !!
@@ -61,25 +62,18 @@ add x y = x + y
 --     10
 --     [(1, "a"), (4, "g"), (9, "h"), (4, "c"), (5, "d"), (10, "Bingo!")]
 exps5 =
-  (map
-     (\(k, v) -> v)
-     (filter
-        (\x ->
-           x ==
-           ((map
-               (\(k, v) -> (k, v))
-               [ (1, "a")
-               , (4, "g")
-               , (9, "h")
-               , (4, "c")
-               , (5, "d")
-               , (10, "Bingo!")
-               ]) !!
-            5 ---------------------------------------------------------------------------
-            ))
-        [(1, "a"), (4, "g"), (9, "h"), (4, "c"), (5, "d"), (10, "Bingo!")] -------------------------------------------------------------------------
-      )) !!
-  0-- lookupKeyTwo :: (k -> k -> Bool) -> k -> [(k, v)] -> Maybe v
+  filter
+    (\x -> x == 10) -- 10 ist unser key
+    (map
+       (\(k, v) -> k)
+       [(1, "a"), (4, "g"), (9, "h"), (4, "c"), (5, "d"), (10, "Bingo!")] -- (map
+     ) --  (\(k, v) -> v)
+    --  (filter
+    --
+--         [(1, "a"), (4, "g"), (9, "h"), (4, "c"), (5, "d"), (10, "Bingo!")])) !!
+--   0
+    --
+-- lookupKeyTwo :: (k -> k -> Bool) -> k -> [(k, v)] -> Maybe v
 -- lookupKeyTwo f y ((k, v):bs) =
 --   if (lookupList (\x -> (f y x)) (map (\(k, v) -> k) ((k, v) : bs))) == Just k
 --     then map (\(k, v) -> Just v) (filter (\k -> k == y) [(k, v)])

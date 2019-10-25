@@ -18,35 +18,25 @@ isIdentical k1 k2
 -------------------------------------------------------------
 -- lookupKey - version 2
 -------------------------------------------------------------
--- lookupKeyTwo :: (k -> k -> Bool) -> k -> [(k, v)] -> Maybe v
--- lookupKeyTwo f k l = lookupList (\x -> x)
--- keyEquals :: k -> k -> Bool
--- keyEquals k1 k2 = k1 == k2
--- lookupList :: (a -> Bool) -> [a] -> Maybe a
--- lookupList _ [] = Nothing
--- lookupList f (a:as)
---   | f a = Just a
---   | otherwise = lookupList f as
---  (map
---      (\(k, v) -> v)
---      (filter
---         (\x ->
---            x ==
---            ((map
---                (\(k, v) -> (k, v))
---                [ (1, "a")
---                , (4, "g")
---                , (9, "h")
---                , (4, "c")
---                , (5, "d")
---                , (10, "Bingo!")
---                ]) !!
---             5
---             ))
---         [(1, "a"), (4, "g"), (9, "h"), (4, "c"), (5, "d"), (10, "Bingo!")]
---       )) !!
---   0
---
+lookupKeyTwo :: (k -> k -> Bool) -> k -> [(k, v)] -> Maybe v
+lookupKeyTwo f k l =
+  let listLength =
+        length (filter (\x -> isIdentical k x) (map (\(k, v) -> k) l))
+   in let keyExists = listLength == 1
+       in if keyExists
+            then Just
+                   ((map
+                       (\(listK, v) -> v)
+                       (filter (\(listK, v) -> listK == k) l)) !!
+                    0)
+            else Nothing
+
+lookupList :: (a -> Bool) -> [a] -> Maybe a
+lookupList _ [] = Nothing
+lookupList f (a:as)
+  | f a = Just a
+  | otherwise = lookupList f as
+
 -------------------------------------------------------------
 -- andList - version 1
 -------------------------------------------------------------

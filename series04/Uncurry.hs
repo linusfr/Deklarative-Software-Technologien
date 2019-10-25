@@ -64,14 +64,26 @@ lookupItem f (i:is)
 exps5 =
   test 10 [(1, "a"), (4, "g"), (9, "h"), (4, "c"), (5, "d"), (10, "Bingo!")]
 
-test :: Int -> [(Int, String)] -> String
+test :: Int -> [(Int, String)] -> Maybe String
 test k l =
   let listLength = length (filter (\x -> x == k) (map (\(k, v) -> k) l))
    in let keyExists = listLength == 1
        in if keyExists
-            then (map (\(listK, v) -> v) (filter (\(listK, v) -> listK == k) l)) !!
-                 0
-            else "Nothing"
+            then Just
+                   ((map
+                       (\(listK, v) -> v)
+                       (filter (\(listK, v) -> listK == k) l)) !!
+                    0)
+            else Nothing
+--
+-- test :: Int -> [(Int, String)] -> String
+-- test k l =
+--   let listLength = length (filter (\x -> x == k) (map (\(k, v) -> k) l))
+--    in let keyExists = listLength == 1
+--        in if keyExists
+--             then (map (\(listK, v) -> v) (filter (\(listK, v) -> listK == k) l)) !!
+--                  0
+--             else "Nothing"
 --
 --
 -- checkIfKeyExists :: Int -> [(Int, String)] -> Bool

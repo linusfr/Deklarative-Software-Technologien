@@ -50,7 +50,6 @@ lookupItem _ [] = 0
 lookupItem f (i:is)
   | f i = i
   | otherwise = lookupItem f is
-
 ---------------------------------------------------------------------------
 -- isMatching :: (Int -> Int -> Bool) -> Int -> [(Int, String)] -> Int
 -- isMatching f x l =
@@ -61,20 +60,84 @@ lookupItem f (i:is)
 --     (\x y -> x == y)
 --     10
 --     [(1, "a"), (4, "g"), (9, "h"), (4, "c"), (5, "d"), (10, "Bingo!")]
-exps5 =
-  test 10 [(1, "a"), (4, "g"), (9, "h"), (4, "c"), (5, "d"), (10, "Bingo!")]
-
-test :: Int -> [(Int, String)] -> Maybe String
-test k l =
-  let listLength = length (filter (\x -> x == k) (map (\(k, v) -> k) l))
-   in let keyExists = listLength == 1
-       in if keyExists
-            then Just
-                   ((map
-                       (\(listK, v) -> v)
-                       (filter (\(listK, v) -> listK == k) l)) !!
-                    0)
-            else Nothing
+-- exps5 =
+--   test
+--     doesEqual
+--     9
+--     [(1, "a"), (4, "g"), (9, "h"), (4, "c"), (5, "d"), (10, "Bingo!")]
+-- test :: Eq k => (k -> k -> Bool) -> k -> [(k, v)] -> Maybe v
+-- test f k l =
+--   let maybeKey = lookupList' (\a -> f k a) (map (\(k, v) -> k) l)
+--    in if maybeKey == Nothing
+--         then Nothing
+--         else Just
+--                ((map (\(listK, v) -> v) (filter (\(listK, v) -> listK == k) l)) !!
+--                 0)
+-- doesEqual :: Eq k => k -> k -> Bool
+-- doesEqual x y = x == y
+-- lookupList' :: (a -> Bool) -> [a] -> Maybe a
+-- lookupList' _ [] = Nothing
+-- lookupList' f (a:as)
+--   | f a = Just a
+--   | otherwise = lookupList' f as
+--
+-- test :: (Int -> Int -> Bool) -> Int -> [(Int, String)] -> Maybe String
+-- test f k l =
+--   let maybeKey = lookupList' (\a -> f k a) (map (\(k, v) -> k) l)
+--    in if maybeKey == Nothing
+--         then Nothing
+--         else Just
+--                ((map (\(listK, v) -> v) (filter (\(listK, v) -> listK == k) l)) !!
+--                 0)
+--
+--
+--   let listLength =
+--    in let keyExists = listLength == 1
+--        in if keyExists
+--             then Just
+--                    ((map
+--                        (\(listK, v) -> v)
+--                        (filter (\(listK, v) -> listK == k) l)) !!
+--                     0)
+--             else Nothing
+-- exps6 =
+--   lookupList'
+--     (\a -> doesEqual 7 a)
+--     (map
+--        (\(k, v) -> k)
+--        [(1, "a"), (4, "g"), (9, "h"), (4, "c"), (5, "d"), (10, "Bingo!")])
+--
+-- doesEqual' :: k -> k -> b
+-- doesEqual' x y = x == y
+-- test :: (k -> k -> b) -> Int -> [(Int, String)] -> Maybe String
+-- test f k l =
+--   let listLength = length (filter (\x -> f x k) (map (\(k, v) -> k) l))
+--    in let keyExists = listLength == 1
+--        in if keyExists
+--             then Just
+--                    ((map
+--                        (\(listK, v) -> v)
+--                        (filter (\(listK, v) -> listK == k) l)) !!
+--                     0)
+--             else Nothing
+--
+-- vor map  [(k,v), (k, v)]
+-- nach map [(k,v)]
+-- nach filter [v]
+-- nach !! 0 v
+-- Just v
+--
+-- test :: Int -> [(Int, String)] -> Maybe String
+-- test k l =
+--   let listLength = length (filter (\x -> x == k) (map (\(k, v) -> k) l))
+--    in let keyExists = listLength == 1
+--        in if keyExists
+--             then Just
+--                    ((map
+--                        (\(listK, v) -> v)
+--                        (filter (\(listK, v) -> listK == k) l)) !!
+--                     0)
+--             else Nothing
 --
 -- test :: Int -> [(Int, String)] -> String
 -- test k l =

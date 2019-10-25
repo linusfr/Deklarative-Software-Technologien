@@ -10,26 +10,20 @@ lookupKeyOne f k1 ((k2, v):ks)
   | otherwise = lookupKeyOne f k1 ks
 
 -- function for testing lookupKey
-isIdentical :: Int -> Int -> Bool
-isIdentical k1 k2
-  | k1 == k2 = True
-  | otherwise = False
+isIdentical :: Eq k => k -> k -> Bool
+isIdentical x y = x == y
 
 -------------------------------------------------------------
 -- lookupKey - version 2
 -------------------------------------------------------------
-lookupKeyTwo :: (k -> k -> Bool) -> k -> [(k, v)] -> Maybe v
+lookupKeyTwo :: Eq k => (k -> k -> Bool) -> k -> [(k, v)] -> Maybe v
 lookupKeyTwo f k l =
-  let listLength =
-        length (filter (\x -> isIdentical k x) (map (\(k, v) -> k) l))
-   in let keyExists = listLength == 1
-       in if keyExists
-            then Just
-                   ((map
-                       (\(listK, v) -> v)
-                       (filter (\(listK, v) -> listK == k) l)) !!
-                    0)
-            else Nothing
+  let maybeKey = lookupList (\a -> f k a) (map (\(k, v) -> k) l)
+   in if maybeKey == Nothing
+        then Nothing
+        else Just
+               ((map (\(listK, v) -> v) (filter (\(listK, v) -> listK == k) l)) !!
+                0)
 
 lookupList :: (a -> Bool) -> [a] -> Maybe a
 lookupList _ [] = Nothing

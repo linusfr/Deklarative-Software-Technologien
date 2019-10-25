@@ -27,6 +27,7 @@ data XML
 --          <p>A paragraph</p>
 --      </body>
 --  </html>
+--
 wantedDocument =
   (Tag
      "html"
@@ -44,7 +45,47 @@ wantedDocument =
 -- pretty
 -------------------------------------------------------------
 -- use map, concat and unwords to create a string representation of the original html string
+--
 pretty :: XML -> String
-pretty (TextNode s) = s
-pretty (Tag s as xs) =
-  "<" ++ s ++ (unwords as) ">" ++ (map pretty xs) "<" ++ s ++ "/>"
+pretty (Tag tagType as [TextNode text]) =
+  "<" ++
+  tagType ++
+  unwords (map (\(Attr x y) -> " " ++ x ++ "=\'" ++ y ++ "\' ") as) ++
+  ">" ++ text ++ "</" ++ tagType ++ ">"
+pretty (Tag tagType as xs) =
+  "<" ++
+  tagType ++
+  unwords (map (\(Attr x y) -> " " ++ x ++ "=\'" ++ y ++ "\' ") as) ++
+  ">" ++ unwords (map pretty xs) ++ "</" ++ tagType ++ ">"
+
+-------------------------------------------------------------
+-- pretty'
+-------------------------------------------------------------
+pretty' :: XML -> String
+pretty' (Tag tagType as [TextNode text]) =
+  generateTag (Tag tagType as [TextNode text])
+pretty' tag = generateTag tag
+
+generateTag :: XML -> String
+generateTag (Tag tagType as [TextNode text]) =
+  "<" ++ tagType ++ generateAttr as ++ ">" ++ text ++ "</" ++ tagType ++ ">"
+generateTag (Tag tagType as xs) =
+  "<" ++
+  tagType ++
+  generateAttr as ++ ">" ++ generateChildren xs ++ "</" ++ tagType ++ ">"
+
+generateAttr :: [Attr] -> String
+generateAttr as =
+  unwords (map (\(Attr x y) -> " " ++ x ++ "=\'" ++ y ++ "\' ") as)
+
+generateChildren :: [XML] -> String
+generateChildren xs = unwords (map pretty xs)
+
+xmlAsString = pretty' wantedDocument
+
+-- write the xml to a html file
+createHtmlFile :: IO ()
+createHtmlFile = writeFile "wantedHTML.html" xmlAsString
+
+createHtmlFile' :: IO ()
+createHtmlFile' = writeFile "wantedHTML'.html" xmlAsString

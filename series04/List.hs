@@ -34,12 +34,18 @@ lookupList f (a:as)
 -------------------------------------------------------------
 -- lookupKey - version 3
 -------------------------------------------------------------
+-- lookupKeyThree :: Eq k => (k -> k -> Bool) -> k -> [(k, v)] -> Maybe v
+-- lookupKeyThree f givenKey l =
+--   let maybe = lookupList (\(listKey, v) -> f listKey givenKey) l
+--    in case maybe of
+--         Just (k, v) -> Just v
+--         Nothing     -> Nothing
 lookupKeyThree :: Eq k => (k -> k -> Bool) -> k -> [(k, v)] -> Maybe v
 lookupKeyThree f givenKey l =
   let maybe = lookupList (\(listKey, v) -> f listKey givenKey) l
-   in case maybe of
-        Just (k, v) -> Just v
-        Nothing     -> Nothing
+   in if maybe == Just (k, v)
+        then Just v
+        else Nothing
 
 -------------------------------------------------------------
 -- andList - version 1

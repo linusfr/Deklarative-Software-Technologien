@@ -2,14 +2,23 @@
 
 module Ranges where
 
+--------------------------------------------
+-- range
+--------------------------------------------
 type Range = Int -> Bool
 
+--------------------------------------------
+-- first block
+--------------------------------------------
 pos :: Range
 pos x = x >= 0
 
 inRange :: Range -> Int -> Bool
 inRange range = range
 
+--------------------------------------------
+-- second block
+--------------------------------------------
 without :: Range -> Range
 without range x = not (range x)
 
@@ -25,3 +34,16 @@ without range x = not (range x)
 --
 shift :: Range -> Int -> Range
 shift range inputX outputFunctionX = (range (outputFunctionX - inputX))
+
+--------------------------------------------
+-- third block
+--------------------------------------------
+-- Die Funktion from :: Int → Range liefert einen Zahlenbereich, der mit der übergebenen Zahl beginnt.
+-- Definieren Sie from mittels pos.
+from :: Int -> Range
+from shiftBy outputFunctionX = shift pos shiftBy outputFunctionX
+
+-- Die Funktion to :: Int → Range liefert einen Zahlenbereich, der mit der übergebenen Zahl endet. Definieren
+-- Sie to mittels from.
+to :: Int -> Range
+to endAt outputFunctionX = from (-endAt) outputFunctionX

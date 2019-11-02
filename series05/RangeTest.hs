@@ -26,8 +26,8 @@ testShift = test (shift (\x -> x == 1) 1)
 --------------------------------------------
 -- third block
 --------------------------------------------
-testFrom = test (from (-50))
+fromTest = test (from (-70))
 
 toTest = test (to 50)
 
-fromToTest = test (fromTo (-50) 50)
+fromToTest = test (fromTo 20 50)

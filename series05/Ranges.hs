@@ -23,32 +23,22 @@ without :: Range -> Range
 without range x = not (range x)
 
 (/\) :: Range -> Range -> Range
-(/\) r1 r2 x = (r1 x) && (r2 x)
+(/\) r1 r2 x = r1 x && r2 x
 
--- (/\) r1 r2 x = (\x -> (r1 x) && (r2 x))
---
 (\/) :: Range -> Range -> Range
-(\/) r1 r2 x = (r1 x) || (r2 x)
+(\/) r1 r2 x = r1 x || r2 x
 
---(/\) r1 r2 x = (\x -> (r1 x) || (r2 x))
---
 shift :: Range -> Int -> Range
-shift range inputX outputFunctionX = (range (outputFunctionX - inputX))
+shift range inputX outputFunctionX = range (outputFunctionX - inputX)
 
 --------------------------------------------
 -- third block
 --------------------------------------------
--- Die Funktion from :: Int → Range liefert einen Zahlenbereich, der mit der übergebenen Zahl beginnt.
--- Definieren Sie from mittels pos.
 from :: Int -> Range
-from shiftBy outputFunctionX = shift pos shiftBy outputFunctionX
+from = shift pos
 
--- Die Funktion to :: Int → Range liefert einen Zahlenbereich, der mit der übergebenen Zahl endet. Definieren
--- Sie to mittels from.
 to :: Int -> Range
-to endAt outputFunctionX = outputFunctionX <= endAt && from 0 outputFunctionX
+to endAt = pos /\ without (from (endAt + 1))
 
--- Die Funktion fromTo :: Int → Int → Range liefert einen Zahlenbereich zwischen zwei Zahlen (inklusive der
--- Grenzen). Definieren Sie fromTo mittels from und to.
 fromTo :: Int -> Int -> Range
 fromTo start end = from start /\ to end

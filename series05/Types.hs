@@ -14,89 +14,94 @@ exps1 = [False, True]
 -----------------------------------------------------------
 exps2 = (\b1 b2 -> b1 && b2)
 
--- same as b1 && b2
--- => && returns a Bool
+-- Bool -> Bool -> Bool
+-- => returns a function which takes two bools
+-- and returns another
 --
 -----------------------------------------------------------
 -- 3.
 -----------------------------------------------------------
 exps3 = map (\b1 b2 -> b1 && b2)
 
--- => [Bool]
+-- [Bool] -> [Bool -> Bool]
+-- => creates an array of functions taking two bools and returning another
 --
 -----------------------------------------------------------
 -- 4.
 -----------------------------------------------------------
 exps4 = map (\b1 b2 -> b1 && b2) [False, True]
 
--- => [Bool -> Bool]
--- => liefert Funktionen zurück, welche wiederum an ein neues map übergeben werden können.
+-- [Bool -> Bool]
+-- => returns a function array which takes one bool and returns another
 --
 -----------------------------------------------------------
 -- 5.
 -----------------------------------------------------------
 exps5 = (\f -> f False)
 
--- (Bool -> t)
--- => Funktion definiert den Ausgabetyp
+-- (Bool -> t) -> t
+-- => the function passed to the lambda defines the output type
+-- which in turn gets returned by the lambda
 --
 -----------------------------------------------------------
 -- 6.
 -----------------------------------------------------------
 exps6 = map (\f -> f False)
 
--- map (\f -> f False) [(\b -> True), (\b -> False), (\b -> True), (\b -> False)]
--- exps6 :: [Bool -> b] -> [b]
---
--- [t]
--- => Funktionen definieren den Typ der Liste
+-- [Bool -> b] -> [b]
+-- => takes a function array. The function defines the return type
 --
 -----------------------------------------------------------
 -- 7.
 -----------------------------------------------------------
 exps7 = map (\f -> f False) (map (\b1 b2 -> b1 && b2) [False, True])
 
-exps7_a = (map (\b1 b2 -> b1 && b2) [False, True])
-
--- => exps7_a returns a function list which is input for exps7_b
-exps7_b = map (\f -> f False) [(\b1 -> b1 && False), (\b1 -> b1 && True)]
-
--- => returns [Bool]
+-- [Bool]
+-- => right map creates an array of functions taking one bool and
+-- returning another which is passed into the left map
+-- which passes False into the created Functions
+-- returning a Bool Array
 --
 -----------------------------------------------------------
 -- 8.
 -----------------------------------------------------------
 exps8 = [(False, True), (True, True)]
 
--- => returns [(Bool, Bool)]
+-- [(Bool, Bool)]
 --
 -----------------------------------------------------------
--- 8.
+-- 9.
 -----------------------------------------------------------
+exps9 = uncurry (&&)
+
 -- curry :: ((a, b) -> c) -> a -> b -> c
 -- curry f a b = f (a, b)
 --
 -- uncurry :: (a -> b -> c) -> (a, b) -> c
 -- uncurry f (a, b) = f a b
-exps9 = uncurry (&&)
-
+--
 -- (&&) :: Bool -> Bool -> Bool
 -- uncurry :: (&&) <==> Bool -> Bool -> Bool -> (a, b) -> c
 -- uncurry && (a, b) = a && b
+--
 exps9_b = exps9 (True, False)
 
--- exps9_a verwendet intern && auf die Parameter
--- aber es gibt so nur "einen" Parameter
---
------------------------------------------------------------
--- 9.
------------------------------------------------------------
-exps10 = filter (uncurry (&&))
-
--- => Ausgabe entspricht dem typen der Liste die übergeben wird, sie muss allerdings aus tupeln bestehen für uncurry(&&)
+-- (Bool, Bool) -> Bool
+-- takes a Bool pair and returns a bool
 --
 -----------------------------------------------------------
 -- 10.
 -----------------------------------------------------------
-exps10 = filter (uncurry (&&)) [(False, True), (True, True)]
--- => [Bool, Bool]
+exps10 = filter (uncurry (&&))
+
+-- [(Bool, Bool)] -> [(Bool, Bool)]
+-- filter needs a list of bool pairs for && and returns
+-- another list of bool pairs
+--
+-----------------------------------------------------------
+-- 11.
+-----------------------------------------------------------
+exps11 = filter (uncurry (&&)) [(False, True), (True, True)]-- [(Bool, Bool)]
+-- same as 10, but the neccessary pairs are given, returns only the
+-- results of the filtering
+-- [(True, True)]

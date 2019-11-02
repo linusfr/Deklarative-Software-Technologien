@@ -46,4 +46,9 @@ from shiftBy outputFunctionX = shift pos shiftBy outputFunctionX
 -- Die Funktion to :: Int → Range liefert einen Zahlenbereich, der mit der übergebenen Zahl endet. Definieren
 -- Sie to mittels from.
 to :: Int -> Range
-to endAt outputFunctionX = from (-endAt) outputFunctionX
+to endAt outputFunctionX = outputFunctionX <= endAt && from 0 outputFunctionX
+
+-- Die Funktion fromTo :: Int → Int → Range liefert einen Zahlenbereich zwischen zwei Zahlen (inklusive der
+-- Grenzen). Definieren Sie fromTo mittels from und to.
+fromTo :: Int -> Int -> Range
+fromTo start end = from start /\ to end

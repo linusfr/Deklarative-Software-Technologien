@@ -29,3 +29,5 @@ testShift = test (shift (\x -> x == 1) 1)
 testFrom = test (from (-50))
 
 toTest = test (to 50)
+
+fromToTest = test (fromTo (-50) 50)

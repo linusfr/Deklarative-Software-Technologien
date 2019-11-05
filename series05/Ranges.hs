@@ -21,14 +21,14 @@ inRange range = range
 -- second block
 --------------------------------------------
 without :: Range -> Range
-without range x = not (range x)
 without range = not . range
 
 (/\) :: Range -> Range -> Range
-(/\) r1 r2 x = r1 x && r2 x
+r1 /\ r2 = \x -> r1 x && r2 x
 
+-- (r1 \/ r2) x = r1 x || r2 x
 (\/) :: Range -> Range -> Range
-(\/) r1 r2 x = r1 x || r2 x
+r1 \/ r2 = \x -> r1 x || r2 x
 
 shift :: Range -> Int -> Range
 shift range inputX outputFunctionX = range (outputFunctionX - inputX)

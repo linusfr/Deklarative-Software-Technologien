@@ -11,7 +11,8 @@ type Range = Int -> Bool
 -- first block
 --------------------------------------------
 pos :: Range
-pos x = x >= 0
+pos  x= x >= 0
+-- pos = (>= 0)
 
 inRange :: Range -> Int -> Bool
 inRange range = range
@@ -21,6 +22,7 @@ inRange range = range
 --------------------------------------------
 without :: Range -> Range
 without range x = not (range x)
+without range = not . range
 
 (/\) :: Range -> Range -> Range
 (/\) r1 r2 x = r1 x && r2 x
@@ -30,6 +32,16 @@ without range x = not (range x)
 
 shift :: Range -> Int -> Range
 shift range inputX outputFunctionX = range (outputFunctionX - inputX)
+
+-- inRange (shift pos 2) 1
+-- ==
+-- (shift pos 2) 1
+-- == 
+-- pos (2-2)
+-- == 
+-- 0
+-- ==
+-- True
 
 --------------------------------------------
 -- third block

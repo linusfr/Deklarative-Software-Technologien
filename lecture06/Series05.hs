@@ -1,0 +1,13 @@
+-- Ausdruck
+-- Reihenfolge egal
+-- Alles wo etwas berechnet wird
+--
+-- Anweisungen
+-- Reihenfolge wichtig
+-- void Methoden
+-- => überall wo Anweisungen gegeben werden
+--
+-- nicht erst bei compile Zeit typen prüfen
+-- programm muss terminieren können
+--
+exps1 = 1

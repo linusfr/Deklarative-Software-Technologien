@@ -8,6 +8,7 @@ exps1 :: Bool
 exps1 = [False, True]
 
 [False, True] = [Bool]
+
 -- [Bool]
 -- => List of Bools
 --
@@ -27,7 +28,7 @@ exps2 = (\b1 b2 -> b1 && b2)
 --Substitution
 -- a -> b
 -- Bool -> Bool -> Bool
--- 
+--
 -- a = Bool -> Bool
 -- b = Bool
 --
@@ -36,8 +37,7 @@ exps2 = (\b1 b2 -> b1 && b2)
 -- a = Bool
 -- b = Bool -> Bool
 -- Bool -> (Bool -> Bool)
-
-exps3 :: [Bool] -> [Bool->Bool]
+exps3 :: [Bool] -> [Bool -> Bool]
 exps3 = map (\b1 b2 -> b1 && b2)
 
 -- [Bool] -> [Bool -> Bool]
@@ -46,7 +46,6 @@ exps3 = map (\b1 b2 -> b1 && b2)
 -----------------------------------------------------------
 -- 4.
 -----------------------------------------------------------
-exps4 :: 
 exps4 = map (\b1 b2 -> b1 && b2) [False, True]
 
 -- [Bool -> Bool]
@@ -55,7 +54,7 @@ exps4 = map (\b1 b2 -> b1 && b2) [False, True]
 -----------------------------------------------------------
 -- 5.
 -----------------------------------------------------------
-exps5 :: (Bool->a) -> a
+exps5 :: (Bool -> a) -> a
 exps5 = (\f -> f False)
 
 -- (Bool -> t) -> t
@@ -78,7 +77,7 @@ exps6 = map (\f -> f False)
 -----------------------------------------------------------
 -- 7.
 -----------------------------------------------------------
--- Beispiel: 
+-- Beispiel:
 -- map (\f -> f False) [not,id]
 -- [ (\f->f False) not, (\f -> f False), id]
 -- [not False, id False]
@@ -130,7 +129,7 @@ exps10 = filter (uncurry (&&))
 -----------------------------------------------------------
 -- 11.
 -----------------------------------------------------------
-exps11 = filter (uncurry (&&)) [(False, True), (True, True)]-- [(Bool, Bool)]
+exps11 = filter (uncurry (&&)) [(False, True), (True, True)] -- [(Bool, Bool)]
 -- same as 10, but the neccessary pairs are given, returns only the
 -- results of the filtering
 -- [(True, True)]

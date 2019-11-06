@@ -8,6 +8,9 @@ Color noch einen Stroke gibt.
 Die Color definiert die Füllfarbe der Graphik.
 Der Stroke besteht aus einer Farbe und einer Linienstärke
 und beschreibt die Linie der Graphik.
+
+style = "fill:black; stroke:yellow;stroke-width:30"
+
 -}
 -- Graphic -> sum of forms
 -- can be an empty Graphic or a Form with another Graphic
@@ -120,19 +123,55 @@ toLower Green  = "green"
 toLower Blue   = "blue"
 toLower Yellow = "yellow"
 
+---------------------------------------------------------------------------------------
+-- STROKE
+---------------------------------------------------------------------------------------
+data Stroke =
+  Stroke
+    { color       :: Color
+    , strokeWidth :: Float
+    }
+
 -- Style
 data Style =
-  Style Color
+  Style Color Stroke
   deriving (Show)
 
 styleToAttr :: Style -> String
-styleToAttr (Style s) =
-  "style=\"stroke:" ++ toLower s ++ "; fill:" ++ toLower s ++ "\""
+styleToAttr (Style fillColor (Stroke strokeColor strokeWidth)) =
+  "style=\"stroke:" ++
+  toLower strokeColor ++
+  "; fill:" ++ toLower fillColor ++ "; stroke-width:" ++ strokeWidth ++ "\""
 
 -- Constant
 defaultStyle :: Style
-defaultStyle = Style Black
+defaultStyle = Style Black (Black 1)
 
+---------------------------------------------------------------------------------------
+-- END STROKE CHANGES
+---------------------------------------------------------------------------------------
+{-
+Definieren Sie die folgenden Linsen unter Verwendung von (|.|).
+    – fillColorStyleLens    :: Lens Style Color
+    – strokeColorStyleLens  :: Lens Style Color
+    – strokeWidthStyleLens  :: Lens Style Float
+
+-- Linsen (lenses)
+data Lens s v =
+  Lens
+    { getterL :: s -> v
+    , setterL :: s -> v -> s
+    }
+
+(|.|) :: Lens b -> Lens a b -> Lens a c
+Lens getBC setBC |.| Lens getAB setAB = Lens getAC setAC
+  where
+    getAC = getBC . getAB
+    setAC sA vC = setAB sA (setBC (getAB sA) vC)
+
+-}
+fillColorStyleLens :: Lens Style Color
+--
 -- formToSVG
 formToSVG :: Form -> String
 formToSVG (Rectangle (Point x1 y1) (Point x2 y2) style) =
@@ -165,11 +204,3 @@ rectangle width height =
 
 circle :: Float -> Graphic
 circle radius = single (Circle (Point radius radius) radius defaultStyle)
-
-{-
-Definieren Sie die folgenden Linsen unter Verwendung von (|.|).
-    – fillColorStyleLens    :: Lens Style Color
-    – strokeColorStyleLens  :: Lens Style Color
-    – strokeWidthStyleLens  :: Lens Style Float
--}
-exps1 = "test"

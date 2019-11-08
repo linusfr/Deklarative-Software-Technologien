@@ -1,3 +1,5 @@
+module Style where
+
 -----------------------------------------------------------------
 -- Aufgabe 2 - Graphistile
 -----------------------------------------------------------------
@@ -9,7 +11,7 @@ Die Color definiert die Füllfarbe der Graphik.
 Der Stroke besteht aus einer Farbe und einer Linienstärke
 und beschreibt die Linie der Graphik.
 
-style = "fill:black; stroke:yellow;stroke-width:30"
+style = "fill:black; stroke:yellow; stroke-width:30"
 
 -}
 -- Graphic -> sum of forms
@@ -23,8 +25,8 @@ single form = [form]
 -- -- changes color of the graphic -> every form in graphic
 --    changed to a map Function
 colored :: Color -> Form -> Form
-colored c (Rectangle p1 p2 _) = Rectangle p1 p2 (Style c)
-colored c ((Circle p f _))    = (Circle p f (Style c))
+colored c (Rectangle p1 p2 _) = Rectangle p1 p2 (Style c (Stroke c 1))
+colored c ((Circle p f _))    = (Circle p f (Style c (Stroke c 1)))
 
 recolor :: (Color -> Form -> Form) -> Color -> Graphic -> Graphic
 recolor _ _ []               = []
@@ -95,17 +97,9 @@ atop (f:fs) (j:js) =
          (j : js))
 atop _ _ = []
 
--- ----------------------------------------------------------------------------------------------------------------
--- -- Graphics --> from series01 adapted for series02
 -- Point
 data Point =
   Point Float Float
-  deriving (Show)
-
--- -- Forms
-data Form
-  = Rectangle Point Point Style
-  | Circle Point Float Style
   deriving (Show)
 
 data Color
@@ -128,34 +122,45 @@ toLower Yellow = "yellow"
 ---------------------------------------------------------------------------------------
 data Stroke =
   Stroke
-    { color       :: Color
+    { strokeColor :: Color
     , strokeWidth :: Float
     }
+  deriving (Show)
 
 -- Style
 data Style =
-  Style Color Stroke
+  Style
+    { fillColor :: Color
+    , stroke    :: Stroke
+    }
   deriving (Show)
 
 styleToAttr :: Style -> String
 styleToAttr (Style fillColor (Stroke strokeColor strokeWidth)) =
   "style=\"stroke:" ++
   toLower strokeColor ++
-  "; fill:" ++ toLower fillColor ++ "; stroke-width:" ++ strokeWidth ++ "\""
+  "; fill:" ++
+  toLower fillColor ++ "; stroke-width:" ++ show strokeWidth ++ "\""
 
 -- Constant
 defaultStyle :: Style
-defaultStyle = Style Black (Black 1)
+defaultStyle = Style Black (Stroke Black 1)
 
 ---------------------------------------------------------------------------------------
--- END STROKE CHANGES
+-- LENS
 ---------------------------------------------------------------------------------------
 {-
 Definieren Sie die folgenden Linsen unter Verwendung von (|.|).
-    – fillColorStyleLens    :: Lens Style Color
-    – strokeColorStyleLens  :: Lens Style Color
-    – strokeWidthStyleLens  :: Lens Style Float
+    – fillColorFormLens :: Lens Form Color
+    – strokeColorStyleLens :: Lens Style Color
+    – strokeWidthStyleLens :: Lens Style Float
 
+      Form {
+          Style{
+            Color
+          }
+      }
+-}
 -- Linsen (lenses)
 data Lens s v =
   Lens
@@ -163,15 +168,122 @@ data Lens s v =
     , setterL :: s -> v -> s
     }
 
-(|.|) :: Lens b -> Lens a b -> Lens a c
+(|.|) :: Lens b c -> Lens a b -> Lens a c
 Lens getBC setBC |.| Lens getAB setAB = Lens getAC setAC
   where
     getAC = getBC . getAB
     setAC sA vC = setAB sA (setBC (getAB sA) vC)
 
+---------------------------------------------------------------------------------------
+-- fillColorFormLens
+---------------------------------------------------------------------------------------
+{-
+fillColorFormLens :: Lens Form Color
+  1. Form und Color müssen Records sein für automatische Getter
+  2. Lens von Form nach Style   (a -> b)
+  3. Lens von Style nach Color  (b -> c)
+  4. Lenskombination (|.|) von Form nach Color
+    (a -> b -> c)
+      2. dann 3.
 -}
-fillColorStyleLens :: Lens Style Color
---
+-- Forms
+data Form
+  = Rectangle
+      { positionPoint :: Point
+      , sizePoint     :: Point
+      , style         :: Style
+      }
+  | Circle
+      { positionPoint :: Point
+      , radius        :: Float
+      , style         :: Style
+      }
+  deriving (Show)
+
+setStyle :: Form -> Style -> Form
+setStyle f s = f {style = s}
+
+styleLens :: Lens Form Style
+styleLens = Lens style setStyle
+
+setColor :: Style -> Color -> Style
+setColor s c = s {fillColor = c}
+
+colorLens :: Lens Style Color
+colorLens = Lens fillColor setColor
+
+fillColorFormLens :: Lens Form Color
+fillColorFormLens = colorLens |.| styleLens
+
+getFormColor :: Form -> Color
+getFormColor = getterL fillColorFormLens
+
+setFormColor :: Form -> Color -> Form
+setFormColor = setterL fillColorFormLens
+
+---------------------------------------------------------------------------------------
+-- strokeColorStyleLens
+---------------------------------------------------------------------------------------
+{-
+strokeColorStyleLens :: Lens Style Color
+  1. Stroke muss ein Record sein für automatischen Getter
+  2. Lens von Style zu Stroke (a -> b)
+  3. Lens von Stroke nach StrokeColor  (b -> c)
+  4. Lenskombination (|.|) von Style nach StrokeColor
+    (a -> b -> c)
+      2. dann 3.
+-}
+setStrokeStyle :: Style -> Stroke -> Style
+setStrokeStyle style stroke = style {stroke = stroke}
+
+strokeStyleLens :: Lens Style Stroke
+strokeStyleLens = Lens stroke setStrokeStyle
+
+setStrokeColor :: Stroke -> Color -> Stroke
+setStrokeColor s c = s {strokeColor = c}
+
+strokeColorLens :: Lens Stroke Color
+strokeColorLens = Lens strokeColor setStrokeColor
+
+strokeColorStyleLens :: Lens Style Color
+strokeColorStyleLens = strokeColorLens |.| strokeStyleLens
+
+getStyleStrokeColor :: Style -> Color
+getStyleStrokeColor = getterL strokeColorStyleLens
+
+setStyleStrokeColor :: Style -> Color -> Style
+setStyleStrokeColor = setterL strokeColorStyleLens
+
+---------------------------------------------------------------------------------------
+-- strokeWidthStyleLens
+---------------------------------------------------------------------------------------
+{-
+strokeWidthStyleLens :: Lens Style Float
+  1. Stroke muss ein Record sein für automatischen Getter
+  2. Lens von Style zu Stroke (a -> b)
+  3. Lens von Stroke nach StrokeWidth  (b -> c)
+  4. Lenskombination (|.|) von Style nach StrokeWidth
+    (a -> b -> c)
+      2. dann 3.
+-}
+setStrokeWidth :: Stroke -> Float -> Stroke
+setStrokeWidth s f = s {strokeWidth = f}
+
+strokeWidthLens :: Lens Stroke Float
+strokeWidthLens = Lens strokeWidth setStrokeWidth
+
+strokeWidthStyleLens :: Lens Style Float
+strokeWidthStyleLens = strokeWidthLens |.| strokeStyleLens
+
+getStyleStrokeWidth :: Style -> Float
+getStyleStrokeWidth = getterL strokeWidthStyleLens
+
+setStyleStrokeWidth :: Style -> Float -> Style
+setStyleStrokeWidth = setterL strokeWidthStyleLens
+
+---------------------------------------------------------------------------------------
+-- END OF CHANGE
+---------------------------------------------------------------------------------------
 -- formToSVG
 formToSVG :: Form -> String
 formToSVG (Rectangle (Point x1 y1) (Point x2 y2) style) =

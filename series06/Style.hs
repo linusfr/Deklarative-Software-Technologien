@@ -97,6 +97,39 @@ atop (f:fs) (j:js) =
          (j : js))
 atop _ _ = []
 
+-- formToSVG
+formToSVG :: Form -> String
+formToSVG (Rectangle (Point x1 y1) (Point x2 y2) style) =
+  "<rect x=\"" ++
+  show x1 ++
+  "\" y=\"" ++
+  show y1 ++
+  "\" width=\"" ++
+  show x2 ++ "\" height=\"" ++ show y2 ++ "\" " ++ styleToAttr style ++ "/>"
+formToSVG (Circle (Point x1 y1) radius style) =
+  "<circle cx=\"" ++
+  show (x1 + 1) ++
+  "\" cy=\"" ++
+  show (y1 + 1) ++
+  "\" r=\"" ++ show radius ++ "\" " ++ styleToAttr style ++ "/>"
+
+-- toSVG --> create the xml-code for all Forms in Graphic
+toSVG :: (Form -> String) -> Graphic -> String
+toSVG fToSVG (f:fs) = (fToSVG f) ++ (toSVG fToSVG fs)
+toSVG _ []          = ""
+
+-- svgBorder --> creates the svg-Label around the xml-code, xmnls neccessary for the styles to be interpreted
+svgBorder :: String -> String
+svgBorder allGraphics =
+  "<svg xmlns=\"http://www.w3.org/2000/svg\">\n\t" ++ allGraphics ++ "\n</svg>"
+
+rectangle :: Float -> Float -> Graphic
+rectangle width height =
+  single (Rectangle (Point 0 0) (Point width height) defaultStyle)
+
+circle :: Float -> Graphic
+circle radius = single (Circle (Point radius radius) radius defaultStyle)
+
 -- Point
 data Point =
   Point Float Float
@@ -372,39 +405,3 @@ light c = atop (rectangle 120 120) (circle 50 |> fc c |> sc Gray |> sw 5)
 
 (|>) :: Graphic -> (Graphic -> Graphic) -> Graphic
 g |> f = f g
-
----------------------------------------------------------------------------------------
--- END OF CHANGE
----------------------------------------------------------------------------------------
--- formToSVG
-formToSVG :: Form -> String
-formToSVG (Rectangle (Point x1 y1) (Point x2 y2) style) =
-  "<rect x=\"" ++
-  show x1 ++
-  "\" y=\"" ++
-  show y1 ++
-  "\" width=\"" ++
-  show x2 ++ "\" height=\"" ++ show y2 ++ "\" " ++ styleToAttr style ++ "/>"
-formToSVG (Circle (Point x1 y1) radius style) =
-  "<circle cx=\"" ++
-  show (x1 + 1) ++
-  "\" cy=\"" ++
-  show (y1 + 1) ++
-  "\" r=\"" ++ show radius ++ "\" " ++ styleToAttr style ++ "/>"
-
--- toSVG --> create the xml-code for all Forms in Graphic
-toSVG :: (Form -> String) -> Graphic -> String
-toSVG fToSVG (f:fs) = (fToSVG f) ++ (toSVG fToSVG fs)
-toSVG _ []          = ""
-
--- svgBorder --> creates the svg-Label around the xml-code, xmnls neccessary for the styles to be interpreted
-svgBorder :: String -> String
-svgBorder allGraphics =
-  "<svg xmlns=\"http://www.w3.org/2000/svg\">\n\t" ++ allGraphics ++ "\n</svg>"
-
-rectangle :: Float -> Float -> Graphic
-rectangle width height =
-  single (Rectangle (Point 0 0) (Point width height) defaultStyle)
-
-circle :: Float -> Graphic
-circle radius = single (Circle (Point radius radius) radius defaultStyle)

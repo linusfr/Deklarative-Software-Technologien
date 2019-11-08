@@ -108,6 +108,7 @@ data Color
   | Green
   | Blue
   | Yellow
+  | Gray
   deriving (Show)
 
 toLower :: Color -> String
@@ -116,6 +117,7 @@ toLower Red    = "red"
 toLower Green  = "green"
 toLower Blue   = "blue"
 toLower Yellow = "yellow"
+toLower Gray   = "gray"
 
 ---------------------------------------------------------------------------------------
 -- STROKE
@@ -151,7 +153,7 @@ defaultStyle = Style Black (Stroke Black 1)
 ---------------------------------------------------------------------------------------
 {-
 Definieren Sie die folgenden Linsen unter Verwendung von (|.|).
-    – fillColorFormLens :: Lens Form Color
+    – fillColorStyleLens :: Lens Style Color
     – strokeColorStyleLens :: Lens Style Color
     – strokeWidthStyleLens :: Lens Style Float
 
@@ -175,51 +177,24 @@ Lens getBC setBC |.| Lens getAB setAB = Lens getAC setAC
     setAC sA vC = setAB sA (setBC (getAB sA) vC)
 
 ---------------------------------------------------------------------------------------
--- fillColorFormLens
+-- fillColorStyleLens
 ---------------------------------------------------------------------------------------
 {-
-fillColorFormLens :: Lens Form Color
-  1. Form und Color müssen Records sein für automatische Getter
-  2. Lens von Form nach Style   (a -> b)
-  3. Lens von Style nach Color  (b -> c)
-  4. Lenskombination (|.|) von Form nach Color
-    (a -> b -> c)
-      2. dann 3.
+fillColorStyleLens :: Lens Style Color
+  1. Style muss ein Record sein für den automatischen Getter
+  2. Lens von Style nach Color   (a -> b)
 -}
--- Forms
-data Form
-  = Rectangle
-      { positionPoint :: Point
-      , sizePoint     :: Point
-      , style         :: Style
-      }
-  | Circle
-      { positionPoint :: Point
-      , radius        :: Float
-      , style         :: Style
-      }
-  deriving (Show)
-
-setStyle :: Form -> Style -> Form
-setStyle f s = f {style = s}
-
-styleLens :: Lens Form Style
-styleLens = Lens style setStyle
-
 setColor :: Style -> Color -> Style
 setColor s c = s {fillColor = c}
 
-colorLens :: Lens Style Color
-colorLens = Lens fillColor setColor
+fillColorStyleLens :: Lens Style Color
+fillColorStyleLens = Lens fillColor setColor
 
-fillColorFormLens :: Lens Form Color
-fillColorFormLens = colorLens |.| styleLens
+getStyleColor :: Style -> Color
+getStyleColor = getterL fillColorStyleLens
 
-getFormColor :: Form -> Color
-getFormColor = getterL fillColorFormLens
-
-setFormColor :: Form -> Color -> Form
-setFormColor = setterL fillColorFormLens
+setStyleColor :: Style -> Color -> Style
+setStyleColor = setterL fillColorStyleLens
 
 ---------------------------------------------------------------------------------------
 -- strokeColorStyleLens
@@ -242,11 +217,11 @@ strokeStyleLens = Lens stroke setStrokeStyle
 setStrokeColor :: Stroke -> Color -> Stroke
 setStrokeColor s c = s {strokeColor = c}
 
-strokeColorLens :: Lens Stroke Color
-strokeColorLens = Lens strokeColor setStrokeColor
+strokefillColorStyleLens :: Lens Stroke Color
+strokefillColorStyleLens = Lens strokeColor setStrokeColor
 
 strokeColorStyleLens :: Lens Style Color
-strokeColorStyleLens = strokeColorLens |.| strokeStyleLens
+strokeColorStyleLens = strokefillColorStyleLens |.| strokeStyleLens
 
 getStyleStrokeColor :: Style -> Color
 getStyleStrokeColor = getterL strokeColorStyleLens
@@ -280,6 +255,123 @@ getStyleStrokeWidth = getterL strokeWidthStyleLens
 
 setStyleStrokeWidth :: Style -> Float -> Style
 setStyleStrokeWidth = setterL strokeWidthStyleLens
+
+{-
+In dieser Aufgabe sollen Sie die Stile aus der vorherigen Aufgabe in der Graphik-Bibliothek verwenden.
+• Definieren Sie die folgenden Linsen unter Verwendung von (|.|).
+  – fillColorFormLens :: Lens Form Color
+  – strokeColorFormLens :: Lens Form Color
+  – strokeWidthFormLens :: Lens Form Float
+-}
+---------------------------------------------------------------------------------------
+-- fillColorFormLens
+---------------------------------------------------------------------------------------
+{-
+fillColorFormLens :: Lens Form Color
+  1. Form und Color müssen Records sein für automatische Getter
+  2. Lens von Form nach Style   (a -> b)
+  3. Lens von Style nach Color  (b -> c)
+  4. Lenskombination (|.|) von Form nach Color
+    (a -> b -> c)
+      2. dann 3.
+-}
+data Form
+  = Rectangle
+      { positionPoint :: Point
+      , sizePoint     :: Point
+      , style         :: Style
+      }
+  | Circle
+      { positionPoint :: Point
+      , radius        :: Float
+      , style         :: Style
+      }
+  deriving (Show)
+
+setStyle :: Form -> Style -> Form
+setStyle f s = f {style = s}
+
+styleLens :: Lens Form Style
+styleLens = Lens style setStyle
+
+fillColorFormLens :: Lens Form Color
+fillColorFormLens = fillColorStyleLens |.| styleLens
+
+getFormColor :: Form -> Color
+getFormColor = getterL fillColorFormLens
+
+setFormColor :: Form -> Color -> Form
+setFormColor = setterL fillColorFormLens
+
+---------------------------------------------------------------------------------------
+-- strokeColorFormLens
+---------------------------------------------------------------------------------------
+{-
+strokeColorFormLens :: Lens Form Color
+  1. Form und Style müssen Records sein für automatische Getter
+  2. Lens von Form nach Style   (a -> b)
+      => StyleLens
+  3. Lens von Style nach strokeColor  (b -> d)
+      => strokeColorStyleLens
+  4. Lenskombination (|.|) von Form nach strokeColor
+    (a -> b -> d)
+      2. dann 3.
+-}
+strokeColorFormLens :: Lens Form Color
+strokeColorFormLens = strokeColorStyleLens |.| styleLens
+
+getFormStrokeColor :: Form -> Color
+getFormStrokeColor = getterL strokeColorFormLens
+
+setFormStrokeColor :: Form -> Color -> Form
+setFormStrokeColor = setterL strokeColorFormLens
+
+---------------------------------------------------------------------------------------
+-- strokeWidthFormLens
+---------------------------------------------------------------------------------------
+{-
+strokeWidthFormLens :: Lens Form Float
+  1. Form und Style müssen Records sein für automatische Getter
+  2. Lens von Form nach Style   (a -> b)
+      => StyleLens
+  3. Lens von Style nach strokeColor  (b -> d)
+      => strokeWidthStyleLens
+  4. Lenskombination (|.|) von Form nach strokeWidth
+    (a -> b -> d)
+      2. dann 3.
+-}
+strokeWidthFormLens :: Lens Form Float
+strokeWidthFormLens = strokeWidthStyleLens |.| styleLens
+
+getFormStrokeWidth :: Form -> Float
+getFormStrokeWidth = getterL strokeWidthFormLens
+
+setFormStrokeWidth :: Form -> Float -> Form
+setFormStrokeWidth = setterL strokeWidthFormLens
+
+fc :: Color -> Graphic -> Graphic
+fc _ []     = []
+fc c (f:fs) = setFormColor f c : fc c fs
+
+sc :: Color -> Graphic -> Graphic
+sc _ []     = []
+sc c (f:fs) = setFormStrokeColor f c : sc c fs
+
+sw :: Float -> Graphic -> Graphic
+sw _ []      = []
+sw fl (f:fs) = setFormStrokeWidth f fl : sw fl fs
+
+{-
+Definieren Sie einen Operator (|>), der es erlaubt, auf die folgende Weise ein Licht für die Ampel zu
+definieren.
+    - light :: Color → Graphic
+    - light c = atop (circle 50 |> fc c |> sc Gray |> sw 5) (rectangle 120 120)
+-}
+light :: Color -> Graphic
+light c = atop (rectangle 120 120) (circle 50 |> fc c |> sc Gray |> sw 5)
+
+(|>) :: Graphic -> (Graphic -> Graphic) -> Graphic
+g |> f = f g
 
 ---------------------------------------------------------------------------------------
 -- END OF CHANGE

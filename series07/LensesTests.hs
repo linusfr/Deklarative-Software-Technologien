@@ -10,3 +10,10 @@ list2 = []
 testHead = getterL headLens list
 
 testHead2 = getterL headLens list2
+
+---------------------------------------
+-- headPrism
+---------------------------------------
+testPrism = getterP headPrism list
+
+testPrism2 = getterP headPrism list2

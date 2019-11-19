@@ -68,3 +68,36 @@ value' = 10
 putPutRule =
   (setterL headLens) ((setterL headLens) listRules value) value' ==
   (setterL headLens) listRules value'
+
+{-
+Definieren Sie ein Prisma für die Kopfkomponente einer Liste headPrism :: Prism [a ] a.
+-}
+data Prism s v =
+  Prism
+    { getterP :: s -> Maybe v
+    , setterP :: s -> v -> s
+    }
+
+headPrism :: Prism [a] a
+headPrism = Prism getHead setHead
+  where
+    getHead :: [a] -> Maybe a
+    getHead []     = Nothing
+    getHead (a:as) = Just a
+    setHead :: [a] -> a -> [a]
+    setHead [] v     = [v]
+    setHead (a:as) v = v : as
+{-
+Definieren Sie eine Funktion nthPrism :: Int → Prism [a] a. Diese Funktion erhält einen Index und liefert
+ein Prisma, das an diesen Index in einer Liste projiziert bzw. diesen Index in einer Liste aktualisiert.
+-}
+-- nthPrism :: Int -> Prism [a] a
+-- nthPrism i = Prism (\i -> getHead i) setHead
+--   where
+--     getHead :: [a] -> Int -> Maybe a
+--     getHead (a:as) =
+--       if i > 0
+--         then Just i
+--         else Nothing
+--     setHead :: [a] -> a -> [a]
+--     setHead l a = l

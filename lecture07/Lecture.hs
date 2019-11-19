@@ -89,3 +89,13 @@ fold leaf node (Node left right) = node (fold leaf node left) (fold leaf node ri
 sumTree :: Tree Int -> Int
 sumTree t = fold id (+) t
 -- sumTree t = fold (\x -> x) (\lr rr -> lr + rr) t
+
+{-
+sum' [1,2,3]
+==
+sum' (1:(2:(3:[])))
+===
+foldr (+) 0(1:(2:(3:[])))
+==
+(1+2(3+(0)))
+-}

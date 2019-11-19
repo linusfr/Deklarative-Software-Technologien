@@ -1,0 +1,29 @@
+# Prüfung
+
+- auf Papier
+- vor Weihnachten wird der Termin abgemacht
+  - unabhängig vom Prüfungsmanagement
+- Inhalt
+  - Begrifflichkeiten
+    - Prädikat
+  - Werte / Typen
+  - Ausdrücke 
+  - Anweisungen
+- Funktion mit Hilfe von
+  - Explizites Pattern Matching
+  - Rekursion
+- Higher Order Functions
+  - z.B map oder filter vorgeben
+  - z.B eine lookup Funktion
+  - (series04)
+-  Bäume
+-  Linsen
+-  ETA reduktion
+   -  wenn nicht gefordert nicht erfordert
+-  Haskell Funktionen kennen
+   -  map etc
+      -  typ und was macht es
+-  id
+-  max, flip, maybe, either, etc
+-  Syntaktische Korrektheit recht wichtig
+   -  (coden auf papier)

@@ -90,6 +90,7 @@ sumTree :: Tree Int -> Int
 sumTree t = fold id (+) t
 -- sumTree t = fold (\x -> x) (\lr rr -> lr + rr) t
 
+-- fold ersetzt jeden konstruktor durch eine funktion
 {-
 sum' [1,2,3]
 ==

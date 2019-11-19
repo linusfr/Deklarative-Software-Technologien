@@ -17,12 +17,27 @@ data Either a b
   | Right b
 
 -}
+exps1_a :: (Either Bool Int, String)
 exps1_a = (Left True, "test")
 
 exps1_b = (Left True, "test2")
 
 exps1_c = (Right 10, "test3")
 
+{-
+Prinzip des allgemeinsten Typens
+:t gibt immer diesen
+z.B a, b oder c
+-}
+id :: b -> b
+id x = x
+
+{-
+konreter typ
+  id :: int -> int
+  id x = x
+-}
+--
 {-
 2. Either (Int, Bool) String
 => Either mit

@@ -217,18 +217,19 @@ fillColorStyleLens :: Lens Style Color
   1. Style muss ein Record sein für den automatischen Getter
   2. Lens von Style nach Color   (a -> b)
 -}
-setColor :: Style -> Color -> Style
-setColor s c = s {fillColor = c}
-
+-- better!
 fillColorStyleLens :: Lens Style Color
 fillColorStyleLens = Lens fillColor setColor
+  where
+    setColor :: Style -> Color -> Style
+    setColor s c = s {fillColor = c}
 
-getStyleColor :: Style -> Color
-getStyleColor = getterL fillColorStyleLens
-
-setStyleColor :: Style -> Color -> Style
-setStyleColor = setterL fillColorStyleLens
-
+-- setColor :: Style -> Color -> Style
+-- setColor s c = s {fillColor = c}
+-- getStyleColor :: Style -> Color
+-- getStyleColor = getterL fillColorStyleLens
+-- setStyleColor :: Style -> Color -> Style
+-- setStyleColor = setterL fillColorStyleLens
 ---------------------------------------------------------------------------------------
 -- strokeColorStyleLens
 ---------------------------------------------------------------------------------------
@@ -403,5 +404,56 @@ definieren.
 light :: Color -> Graphic
 light c = atop (rectangle 120 120) (circle 50 |> fc c |> sc Gray |> sw 5)
 
-(|>) :: Graphic -> (Graphic -> Graphic) -> Graphic
+{-
+kein Pattern Matching
+  => sind nicht spezifisch mit dem typen
+  => einfach generisch definieren
+-}
+-- (|>) :: Graphic -> (Graphic -> Graphic) -> Graphic
+-- g |> f = f g
+(|>) :: a -> (a -> a) -> a
 g |> f = f g
+
+-- am besten
+fc :: Color -> Graphic -> Graphic
+fc = help fillColorFormLens
+
+help :: Lens b a -> a -> [b] -> [b]
+help lens c = map (\f -> setterL lens f c)
+  -- well-behaved
+  -- very well behaved
+
+--
+-- for all s. forall v. get (put s v) == v
+-- put-get % get-put
+-- put-put
+{-
+OBACHT -> Record Syntax
+-}
+data Player
+  = Mario
+      { lives    :: int
+      , position :: Point
+      }
+  | Yoshi
+      { lives    :: int
+      , position :: Point
+      , enemy    :: Player
+      }
+
+-- syntax schenkt einem funktion
+-- lives :: Player -> Int
+data Prism s v =
+  Prism
+    { getterP :: s -> Maybe v
+    , setterP :: s -> v -> s
+    }
+
+-- durch das Maybe sieht man Laufzeitfehler schon beim Compilieren
+enemy :: Player -> Maybe Enemy
+enemy (Mario _ _)   = Nothing
+enemy (Yoshi _ _ e) = Just e
+
+setEnemy :: Player -> Enemy -> Player
+setEnemy (Mario l p) e   = Mario l p
+setEnemy (Yoshi l p _) e = Yoshi l p e

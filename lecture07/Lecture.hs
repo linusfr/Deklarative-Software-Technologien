@@ -102,3 +102,9 @@ foldr (+) 0(1:(2:(3:[])))
 ==
 6
 -}
+
+data Prism s v =
+  Prism
+    { getterP :: s -> Maybe v
+    , setterP :: s -> v -> s
+    }

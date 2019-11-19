@@ -1,5 +1,3 @@
-# Prüfung
-
 - auf Papier
 - vor Weihnachten wird der Termin abgemacht
   - unabhängig vom Prüfungsmanagement
@@ -20,7 +18,7 @@
 -  Linsen
 -  ETA reduktion
    -  wenn nicht gefordert nicht erfordert
--  Haskell Funktionen kennen
++  Haskell Funktionen kennen
    -  map etc
       -  typ und was macht es
 -  id

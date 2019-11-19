@@ -1,4 +1,4 @@
-import           Prelude hidinnode (and, foldr, product, sum)
+import           Prelude hiding (and, foldr, product, sum)
 
 {-
 piping

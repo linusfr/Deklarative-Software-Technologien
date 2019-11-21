@@ -29,13 +29,10 @@ testNthPrismSet = ((setterP (nthPrism' 5)) list 10)
 testNthPrismGet' = (getterP (nthPrism' 5)) list
 
 testNthPrismSet' = ((setterP (nthPrism' 5)) list 10)
-
 ---------------------------------------
 -- liftTest
 ---------------------------------------
-liftTest = (getterP (lift headLens)) list
-
-liftTest' = getValue ((getterP (lift headLens)) [])
-
-getValue :: Maybe v -> Constraint x
-getValue (Just v) = (show (typeOf v))
+-- liftTest = (getterP (lift headLens)) list
+-- liftTest' = getValue ((getterP (lift headLens)) [])
+-- getValue :: Maybe v -> Constraint x
+-- getValue (Just v) = (show (typeOf v))

@@ -87,6 +87,7 @@ headPrism = Prism getHead setHead
     setHead :: [a] -> a -> [a]
     setHead [] v     = [v]
     setHead (a:as) v = v : as
+
 {-
 Definieren Sie eine Funktion nthPrism :: Int → Prism [a] a. Diese Funktion erhält einen Index und liefert
 ein Prisma, das an diesen Index in einer Liste projiziert bzw. diesen Index in einer Liste aktualisiert.
@@ -101,3 +102,13 @@ ein Prisma, das an diesen Index in einer Liste projiziert bzw. diesen Index in e
 --         else Nothing
 --     setHead :: [a] -> a -> [a]
 --     setHead l a = l
+
+nthPrism :: Int -> Prism [a] a
+nthPrism i = Prism getHead setHead
+  where
+    getHead :: [a] -> Maybe a
+    getHead []     = Nothing
+    getHead (a:as) = Just a
+    setHead :: [a] -> a -> [a]
+    setHead [] v     = [v]
+    setHead (a:as) v = v : as

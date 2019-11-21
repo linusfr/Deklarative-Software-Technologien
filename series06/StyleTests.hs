@@ -8,16 +8,16 @@ PART ONE
 ---------------------------------------------------------------------------------------
 styleTest = Style Red (Stroke Black 1)
 
-testGetColorFromStyle = getStyleColor styleTest
+testGetColorFromStyle = (getterL strokeColorStyleLens) styleTest
 
-testSetColorFromStyle = setStyleColor styleTest Red
+testSetColorFromStyle = (setterL strokeColorStyleLens) styleTest Red
 
 ---------------------------------------------------------------------------------------
 -- strokeColorStyleLens
 ---------------------------------------------------------------------------------------
 styleStrokeColorTest = Style Red (Stroke Black 1)
 
-testGetStrokeColorFromStyle = getStyleStrokeColor styleStrokeColorTest
+testGetStrokeColorFromStyle = strokeWidthStyleLens styleStrokeColorTest
 
 testSetStrokeColorFromStyle = setStyleStrokeColor styleStrokeColorTest Red
 

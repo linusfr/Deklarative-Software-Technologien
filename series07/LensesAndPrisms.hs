@@ -107,3 +107,39 @@ nthPrism i = Prism (getGivenIndex i) (setGivenIndex i)
       if i > 0
         then a : (setGivenIndex (i - 1) as v)
         else v : as
+
+nthPrism' :: Int -> Prism [a] a
+nthPrism' i = Prism (getGivenIndex i) (setGivenIndex i)
+  where
+    getGivenIndex :: Int -> [a] -> Maybe a
+    getGivenIndex _ [] = Nothing
+    getGivenIndex i (a:as) =
+      if i > 0
+        then getGivenIndex (i - 1) as
+        else (getterP headPrism) (a : as)
+    setGivenIndex :: Int -> [a] -> a -> [a]
+    setGivenIndex _ [] v = [v]
+    setGivenIndex i (a:as) v =
+      if i > 0
+        then a : (setGivenIndex (i - 1) as v)
+        else (setterP headPrism) (a : as) v
+
+{-
+Aufgabe 2 - Prismen komponieren
+In dieser Aufgabe sollen Sie Funktionen zur Arbeit mit Prismen definieren.
+
+• Definieren Sie eine Funktion lift :: Lens s a → Prism s a, mit deren Hilfe man aus einer Linse ein Prisma
+machen kann.
+-}
+lift :: Lens s v -> Prism s v
+lift lens = Prism (getterP (getterL lens)) (setterL lens)
+  where
+    getterP :: (s -> v) -> s -> Maybe v
+    getterP f s = Just (f s)
+      -- if (typeOf (f s)) == error
+      --   then Nothing
+      --   else Just (f s)
+{-
+• Definieren Sie die Funktion (|..|) :: Prism b c → Prism a b → Prism a c, die genutzt werden kann, um zwei
+Prismen zu komponieren.
+-}

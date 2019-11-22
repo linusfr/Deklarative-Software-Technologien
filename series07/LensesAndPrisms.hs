@@ -171,3 +171,25 @@ Aufgabe 3 - Faltungen auf Listen
 -}
 orList :: [Bool] -> Bool
 orList = foldr (||) False
+
+{-
+• Die Funktion lookupFirst :: (a → Bool) → [a] → Maybe a liefert das erste Element in der Liste, das das
+Prädikat erfüllt
+-}
+lookupFirst :: (a -> Bool) -> [a] -> Maybe a
+lookupFirst f =
+  foldl
+    (\old new ->
+       case old of
+         Nothing ->
+           if (f new)
+             then Just new
+             else Nothing
+         old -> old)
+    Nothing
+
+{-
+• Die Funktion mapList :: (a → b) → [a] → [b], die eine Funktion auf alle Elemente einer Liste anwendet.
+-}
+mapList :: (a -> b) -> [a] -> [b]
+mapList f = foldr (\new old -> f new : old) []

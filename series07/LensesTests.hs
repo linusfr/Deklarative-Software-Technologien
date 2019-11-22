@@ -46,3 +46,23 @@ boolList' = [False, False, False, False, False]
 testOrList = orList boolList
 
 testOrList' = orList boolList'
+
+---------------------------------------
+-- lookupFirst
+---------------------------------------
+greaterFive :: Int -> Bool
+greaterFive x = x > 5
+
+testLookupFirst = lookupFirst greaterFive list
+
+testLookupFirst' = lookupFirst greaterFive [7 .. 20]
+
+---------------------------------------
+-- mapList
+---------------------------------------
+aToB :: Int -> Int
+aToB i = i + 1
+
+listA = [1 .. 10]
+
+testMapList = mapList aToB listA

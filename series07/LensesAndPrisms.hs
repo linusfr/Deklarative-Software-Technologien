@@ -150,16 +150,23 @@ Prismen zu komponieren.
 --   where
 --     getAC =
 --       let maybe = getAB
---        in if maybe == Just v
---             then getBC . stripMaybe maybe
---             else Nothing
--- stripMaybe :: Maybe v -> v
--- stripMaybe (Just v) = v
--- (|.|) :: Lens b c -> Lens a b -> Lens a c
--- Lens getBC setBC |.| Lens getAB setAB = Lens getAC setAC
---   where
---     getAC = getBC . getAB
---     setAC sA vC = setAB sA (setBC (getAB sA) vC)
+--        in case maybe of
+--             Nothing -> Nothing
+--             x       -> getBC (stripMaybe x)
+--     setAC sA vC =
+--       let maybe = (getAB sA)
+--        in case maybe of
+--             Nothing -> sA
+--             x       -> setAB sA (setBC (stripMaybe x) vC)
+stripMaybe :: Maybe v -> v
+stripMaybe (Just v) = v
+
+(|.|) :: Lens b c -> Lens a b -> Lens a c
+Lens getBC setBC |.| Lens getAB setAB = Lens getAC setAC
+  where
+    getAC = getBC . getAB
+    setAC sA vC = setAB sA (setBC (getAB sA) vC)
+
 {-
 Aufgabe 3 - Faltungen auf Listen
   In dieser Aufgabe sollen Sie sich mit den Funktionen foldr und foldl beschäftigen. Definieren Sie die folgenden

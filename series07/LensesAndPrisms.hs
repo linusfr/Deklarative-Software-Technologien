@@ -123,6 +123,7 @@ nthPrism' i = Prism (getGivenIndex i) (setGivenIndex i)
       if i > 0
         then a : (setGivenIndex (i - 1) as v)
         else (setterP headPrism) (a : as) v
+
 {-
 Aufgabe 2 - Prismen komponieren
 In dieser Aufgabe sollen Sie Funktionen zur Arbeit mit Prismen definieren.
@@ -130,15 +131,34 @@ In dieser Aufgabe sollen Sie Funktionen zur Arbeit mit Prismen definieren.
 • Definieren Sie eine Funktion lift :: Lens s a → Prism s a, mit deren Hilfe man aus einer Linse ein Prisma
 machen kann.
 -}
--- lift :: Lens s v -> Prism s v
--- lift lens = Prism (getterP (getterL lens)) (setterL lens)
---   where
---     getterP :: (s -> v) -> s -> Maybe v
---     getterP f s = Just (f s)
-      -- if (typeOf (f s)) == error
-      --   then Nothing
-      --   else Just (f s)
+-----------------------------------------
+-- how do we pattern match for an error?
+-- if getterL can't get a result
+-----------------------------------------
+lift :: Lens s v -> Prism s v
+lift lens = Prism (getterP (getterL lens)) (setterL lens)
+  where
+    getterP :: (s -> v) -> s -> Maybe v
+    getterP f s = Just (f s)
+
 {-
 • Definieren Sie die Funktion (|..|) :: Prism b c → Prism a b → Prism a c, die genutzt werden kann, um zwei
 Prismen zu komponieren.
 -}
+(|..|) :: Prism b c -> Prism a b -> Prism a c
+Prism getBC setBC |..| Prism getAB setAB = Prism getAC setAC
+  where
+    getAC = getBC . getAB
+    setAC sA vC = setAB sA (setBC (getAB sA) vC)
+
+{-
+Aufgabe 3 - Faltungen auf Listen
+  In dieser Aufgabe sollen Sie sich mit den Funktionen foldr und foldl beschäftigen. Definieren Sie die folgenden
+  Funktionen mit foldr oder mit foldl. Überlegen Sie sich jeweils, welche der Funktionen sich zur Definition besser
+  eignet.
+
+  • Die Funktion orList :: [Bool ] → Bool ist die Verallgemeinerung von (||) auf eine Liste von booleschen
+    Werten.
+-}
+orList :: [Bool] -> Bool
+orList = foldr (||) False

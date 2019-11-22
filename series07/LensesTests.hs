@@ -1,4 +1,3 @@
-import           Data.Typeable
 import           LensesAndPrisms
 
 ---------------------------------------
@@ -29,10 +28,21 @@ testNthPrismSet = ((setterP (nthPrism' 5)) list 10)
 testNthPrismGet' = (getterP (nthPrism' 5)) list
 
 testNthPrismSet' = ((setterP (nthPrism' 5)) list 10)
+
 ---------------------------------------
 -- liftTest
 ---------------------------------------
--- liftTest = (getterP (lift headLens)) list
--- liftTest' = getValue ((getterP (lift headLens)) [])
--- getValue :: Maybe v -> Constraint x
--- getValue (Just v) = (show (typeOf v))
+liftTest = (getterP (lift headLens)) list
+
+liftTest' = (getterP (lift headLens)) []
+
+---------------------------------------
+-- orList
+---------------------------------------
+boolList = [True, True, False, False, True]
+
+boolList' = [False, False, False, False, False]
+
+testOrList = orList boolList
+
+testOrList' = orList boolList'

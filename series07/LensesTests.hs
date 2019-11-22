@@ -69,9 +69,9 @@ testLookupFirst' = lookupFirst greaterFive [7 .. 20]
 ---------------------------------------
 -- mapList
 ---------------------------------------
-aToB :: Int -> Int
-aToB i = i + 1
+plusOne :: Int -> Int
+plusOne i = i + 1
 
 listA = [1 .. 10]
 
-testMapList = mapList aToB listA
+testMapList = mapList plusOne listA

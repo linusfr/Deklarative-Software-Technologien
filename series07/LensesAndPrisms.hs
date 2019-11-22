@@ -145,12 +145,21 @@ lift lens = Prism (getterP (getterL lens)) (setterL lens)
 • Definieren Sie die Funktion (|..|) :: Prism b c → Prism a b → Prism a c, die genutzt werden kann, um zwei
 Prismen zu komponieren.
 -}
-(|..|) :: Prism b c -> Prism a b -> Prism a c
-Prism getBC setBC |..| Prism getAB setAB = Prism getAC setAC
-  where
-    getAC = getBC . getAB
-    setAC sA vC = setAB sA (setBC (getAB sA) vC)
-
+-- (|..|) :: Prism b c -> Prism a b -> Prism a c
+-- Prism getBC setBC |..| Prism getAB setAB = Prism getAC setAC
+--   where
+--     getAC =
+--       let maybe = getAB
+--        in if maybe == Just v
+--             then getBC . stripMaybe maybe
+--             else Nothing
+-- stripMaybe :: Maybe v -> v
+-- stripMaybe (Just v) = v
+-- (|.|) :: Lens b c -> Lens a b -> Lens a c
+-- Lens getBC setBC |.| Lens getAB setAB = Lens getAC setAC
+--   where
+--     getAC = getBC . getAB
+--     setAC sA vC = setAB sA (setBC (getAB sA) vC)
 {-
 Aufgabe 3 - Faltungen auf Listen
   In dieser Aufgabe sollen Sie sich mit den Funktionen foldr und foldl beschäftigen. Definieren Sie die folgenden

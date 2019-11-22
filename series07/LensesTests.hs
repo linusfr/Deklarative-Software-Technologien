@@ -1,5 +1,8 @@
 import           LensesAndPrisms
 
+{-
+1.
+-}
 ---------------------------------------
 -- headLens
 ---------------------------------------
@@ -29,6 +32,9 @@ testNthPrismGet' = (getterP (nthPrism' 5)) list
 
 testNthPrismSet' = ((setterP (nthPrism' 5)) list 10)
 
+{-
+2.
+-}
 ---------------------------------------
 -- liftTest
 ---------------------------------------
@@ -36,6 +42,9 @@ liftTest = (getterP (lift headLens)) list
 
 liftTest' = (getterP (lift headLens)) []
 
+{-
+3.
+-}
 ---------------------------------------
 -- orList
 ---------------------------------------

@@ -131,10 +131,6 @@ In dieser Aufgabe sollen Sie Funktionen zur Arbeit mit Prismen definieren.
 • Definieren Sie eine Funktion lift :: Lens s a → Prism s a, mit deren Hilfe man aus einer Linse ein Prisma
 machen kann.
 -}
------------------------------------------
--- how do we pattern match for an error?
--- if getterL can't get a result
------------------------------------------
 lift :: Lens s v -> Prism s v
 lift lens = Prism (getterP (getterL lens)) (setterL lens)
   where
@@ -145,27 +141,16 @@ lift lens = Prism (getterP (getterL lens)) (setterL lens)
 • Definieren Sie die Funktion (|..|) :: Prism b c → Prism a b → Prism a c, die genutzt werden kann, um zwei
 Prismen zu komponieren.
 -}
--- (|..|) :: Prism b c -> Prism a b -> Prism a c
--- Prism getBC setBC |..| Prism getAB setAB = Prism getAC setAC
---   where
---     getAC =
---       let maybe = getAB
---        in case maybe of
---             Nothing -> Nothing
---             x       -> getBC (stripMaybe x)
---     setAC sA vC =
---       let maybe = (getAB sA)
---        in case maybe of
---             Nothing -> sA
---             x       -> setAB sA (setBC (stripMaybe x) vC)
-stripMaybe :: Maybe v -> v
-stripMaybe (Just v) = v
-
-(|.|) :: Lens b c -> Lens a b -> Lens a c
-Lens getBC setBC |.| Lens getAB setAB = Lens getAC setAC
-  where
-    getAC = getBC . getAB
-    setAC sA vC = setAB sA (setBC (getAB sA) vC)
+(|..|) :: Prism b c -> Prism a b -> Prism a c
+prismA |..| prismB =
+  let get a = (getIntern (getterP prismB a))
+      getIntern Nothing  = Nothing
+      getIntern (Just x) = getterP prismA x
+      getBlank (Just b) = b
+      getBFromA aValue = getBlank (getterP prismB aValue)
+      test aValue cValue = (setterP prismA (getBFromA aValue) cValue)
+      set aValue cValue = setterP prismB aValue (test aValue cValue)
+   in Prism get set
 
 {-
 Aufgabe 3 - Faltungen auf Listen

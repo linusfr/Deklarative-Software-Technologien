@@ -14,6 +14,7 @@ data Lens s v =
     , setterL :: s -> v -> s
     }
 
+-- use head instead of getHead
 headLens :: Lens [a] a
 headLens = Lens getHead setHead
   where
@@ -142,15 +143,16 @@ lift lens = Prism (getterP (getterL lens)) (setterL lens)
 Prismen zu komponieren.
 -}
 (|..|) :: Prism b c -> Prism a b -> Prism a c
-prismA |..| prismB =
-  let get a = (getIntern (getterP prismB a))
-      getIntern Nothing  = Nothing
-      getIntern (Just x) = getterP prismA x
-      getBlank (Just b) = b
-      getBFromA aValue = getBlank (getterP prismB aValue)
-      test aValue cValue = (setterP prismA (getBFromA aValue) cValue)
-      set aValue cValue = setterP prismB aValue (test aValue cValue)
-   in Prism get set
+Prism getBC setBC |..| Prism getAB setAB = Prism getAC setAC
+  where
+    getAC a =
+      case getAB of
+        Nothing -> Nothing
+        Just b  -> getBC b
+    setAC sA vC =
+      case getAB sA of
+        Nothing -> sA
+        Just b  -> setAB sA (setBC b vC)
 
 {-
 Aufgabe 3 - Faltungen auf Listen

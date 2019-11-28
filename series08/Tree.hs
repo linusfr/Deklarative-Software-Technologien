@@ -13,14 +13,45 @@ data BinTree a
   = Empty
   | Node (BinTree a) a (BinTree a)
 
--- fold :: BinTree a -> (a -> a -> a -> b) -> b
--- fold Empty _                    = 0
--- fold (Node lTree value rTree) f = f value (fold lTree) (fold rTree)
--- fold :: Leaf     -> Node          -> Tree   -> value
--- fold :: (a -> b) -> (b -> b -> b) -> Tree a -> b
--- fold leaf node (Leaf x) = leaf x
--- fold leaf node (Node left right) =
---   node (fold leaf node left) (fold leaf node right)
+{-
+Beispiel Liste
+    Konstruktoren
+        - [] :: [a]
+        - (:) :: a -> [a] -> [a]
+
+    den zu faltenden Typen (hier [a]) durch einen neuen Typen ersetzen
+
+    fold :: a -> (a -> b -> b) -> ...
+
+    Dann braucht die Faltung noch die Datenstruktur, die Sie falten soll und gibt
+    den neuen Typen zurück
+
+    fold :: a -> (a -> b -> b) -> [a] -> b
+
+Beispiel Baum
+
+    data Tree a
+        = Leaf a
+        | Node (Tree a) (Tree a)
+
+    nach dem Muster vom Listenbeispiel erhält man:
+
+    foldTree :: (a -> b) -> (b -> b -> b) -> Tree a -> b
+
+    foldTree :: (a -> b) -> (b -> b -> b) -> Tree a -> b
+    foldTree leaf _ (Leaf x) = leaf x
+    foldTree leaf node (Node lt rt) = node (foldTree leaf node lt) (foldTree leaf node rt)
+
+    leaves :: Tree a -> Int
+    leaves (Leaf _) = 1
+    leaves (Node lt rt) = leaves lt + leaves rt
+
+    leaves' :: Tree a -> Int
+    leaves' = foldTree (const 1) (+)
+
+-}
+test = 1
+
 {-
     Definieren Sie die folgenden Funktionen mit Hilfe Ihrer
     Faltung.

@@ -49,6 +49,12 @@ showExpr =
 {-
     • Implementieren Sie eine Funktion eval0 :: Expr → Int mit Hilfe der Faltung.
 -}
+eval :: Expr -> Int
+eval = foldExpr (\op exp1 exp2 -> display op exp1 exp2) (\x -> x)
+  where
+    display Add x y = x + y
+    display Mul x y = x * y
+
 {-
     • Definieren Sie für den Datentyp XML eine Faltung.
 -}

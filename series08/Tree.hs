@@ -9,10 +9,6 @@ Aufgabe 3 - Faltungen für Bäume
     Definieren Sie eine Faltung für den Datentyp BinTree. Gehen Sie dabei nach dem Schema aus der Vorlesung
     vor, um sich zu überlegen, wie die Faltung definiert ist.
 -}
-data BinTree a
-  = Empty
-  | Node (BinTree a) a (BinTree a)
-
 {-
 Beispiel Liste
     Konstruktoren
@@ -50,8 +46,14 @@ Beispiel Baum
     leaves' = foldTree (const 1) (+)
 
 -}
-test = 1
+data BinTree a
+  = Empty
+  | Node (BinTree a) a (BinTree a)
 
+{-
+Konstruktoren
+    - Empty ::
+-}
 {-
     Definieren Sie die folgenden Funktionen mit Hilfe Ihrer
     Faltung.

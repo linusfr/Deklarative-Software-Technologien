@@ -11,6 +11,9 @@ Aufgabe 3 - Faltungen für Bäume
 -}
 {-
 Beispiel Liste
+
+data List = []
+          | (:)
     Konstruktoren
         - [] :: [a]
         - (:) :: a -> [a] -> [a]

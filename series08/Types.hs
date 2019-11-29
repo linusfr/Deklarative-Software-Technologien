@@ -58,7 +58,33 @@ eval = foldExpr (\op exp1 exp2 -> display op exp1 exp2) (\x -> x)
 {-
     • Definieren Sie für den Datentyp XML eine Faltung.
 -}
+data Attr =
+  Attr String String
+  deriving (Show)
+
+data XML
+  = Tag String [Attr] [XML]
+  | TextNode String
+  deriving (Show)
+
+{-
+Konstruktoren
+  Tag :: String -> [Attr] -> [XML] -> XML
+  TextNode :: String -> XML
+
+  =>
+
+  foldXML :: (String -> b) -> (String -> [Attr] -> [b] -> b) -> XML -> b
+-}
+foldXML :: (String -> b) -> (String -> [Attr] -> [b] -> b) -> XML -> b
+foldXML textNode tag (TextNode value)       = textNode value
+foldXML textNode tag (Tag string as (x:xs)) = undefined
+
+-- foldXML textNode (tag string as xs) x
+-- foldXML textNode tag x
+-- tag string as xs
 {-
     • Implementieren Sie die Funktion pretty aus der 4. Übung mit Hilfe der Faltung.
 -}
-test = 1
+pretty :: XML -> String
+pretty xml = undefined

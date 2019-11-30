@@ -76,15 +76,18 @@ Konstruktoren
 
   foldXML :: (String -> b) -> (String -> [Attr] -> [b] -> b) -> XML -> b
 -}
-foldXML :: (String -> b) -> (String -> [Attr] -> [b] -> b) -> XML -> b
-foldXML textNode tag (TextNode value)       = textNode value
-foldXML textNode tag (Tag string as (x:xs)) = undefined
+foldXML :: (String -> b) -> (String -> [Attr] -> [XML] -> b) -> XML -> b
+foldXML textNode _ (TextNode x)      = textNode x
+foldXML textNode tag (Tag x attr xs) = tag x attr xs
 
--- foldXML textNode (tag string as xs) x
--- foldXML textNode tag x
--- tag string as xs
-{-
-    • Implementieren Sie die Funktion pretty aus der 4. Übung mit Hilfe der Faltung.
+{-where
+• Implementieren Sie die Funktion pretty aus der 4. Übung mit Hilfe der Faltung.
 -}
 pretty :: XML -> String
-pretty xml = undefined
+pretty =
+  foldXML id (\x as xs -> openTag x as ++ unwords (map pretty xs) ++ closeTag x)
+  where
+    openTag x as = "<" ++ x ++ generateAttr as ++ ">"
+    closeTag x = "</" ++ x ++ ">"
+    generateAttr as =
+      unwords (map (\(Attr x y) -> " " ++ x ++ "=\'" ++ y ++ "\' ") as)

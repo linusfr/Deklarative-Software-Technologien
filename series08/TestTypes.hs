@@ -22,4 +22,4 @@ testXML =
 testPretty = pretty testXML
 
 createHTML :: IO ()
-createHTML = writeFile "testPretty.html" testPretty
+createHTML = writeFile "testPretty2.html" testPretty

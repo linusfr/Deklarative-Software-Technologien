@@ -20,9 +20,13 @@ and :: [Bool] -> Bool
 and []     = True
 and (i:is) = i && and is
 
+foldl :: (a -> b -> a) -> a -> [b] -> a
+foldl e [ ] = e
+foldl f e (x : xs) = foldl f (f e x) xs
+
 foldr :: (a -> b -> b) -> b -> [a] -> b
-foldr _ e []     = e
-foldr f e (x:xs) = f x (node e xs)
+foldr e [ ] = e
+foldr f e (x : xs) = f x (foldr f e xs)
 
 sum' :: [Int] -> Int
 sum' l = foldr (+) 0
@@ -53,9 +57,9 @@ productEnd' :: [Int] -> Int -> Int
 productEnd' [] acc     = acc
 productEnd' (i:is) acc = productEnd' is (acc * i)
 
-foldl :: (b -> a -> b) -> b -> [a] -> b
-foldl _ e [] = e
-foldl f e (x:xs) foldl f e xs
+-- foldl :: (b -> a -> b) -> b -> [a] -> b
+-- foldl _ e [] = e
+-- foldl f e (x:xs) foldl f e xs
 
 {-
 endrekursiv
@@ -83,7 +87,7 @@ Node :: Tree a -> Tree a -> Tree a
 -- Konstruktoren geben immer das zurück, was sie "bauen"
 
 fold :: (a -> b) -> ( b -> b -> b) -> Tree a -> b
-fold leaf node (Lealeaf x) = leaf x 
+fold leaf node (Leaf x) = leaf x 
 fold leaf node (Node left right) = node (fold leaf node left) (fold leaf node right) 
 
 sumTree :: Tree Int -> Int

@@ -74,13 +74,13 @@ Konstruktoren
 
   =>
 
-  foldXML :: (String -> b) -> (String -> [Attr] -> [b] -> b) -> XML -> b
+  foldXML :: (String -> b) -> (String -> [Attr] -> [XML] -> b) -> XML -> b
 -}
 foldXML :: (String -> b) -> (String -> [Attr] -> [XML] -> b) -> XML -> b
-foldXML textNode _ (TextNode x)      = textNode x
-foldXML textNode tag (Tag x attr xs) = tag x attr xs
+foldXML textNode _ (TextNode text)    = textNode text
+foldXML textNode tag (Tag text as xs) = tag text as xs
 
-{-where
+{-
 • Implementieren Sie die Funktion pretty aus der 4. Übung mit Hilfe der Faltung.
 -}
 pretty :: XML -> String

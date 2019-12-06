@@ -50,10 +50,10 @@ showExpr =
     • Implementieren Sie eine Funktion eval0 :: Expr → Int mit Hilfe der Faltung.
 -}
 eval :: Expr -> Int
-eval = foldExpr (\op exp1 exp2 -> display op exp1 exp2) (\x -> x)
+eval = foldExpr (\op exp1 exp2 -> applyOp op exp1 exp2) (\x -> x)
   where
-    display Add x y = x + y
-    display Mul x y = x * y
+    applyOp Add = (+)
+    applyOp Mul = (*)
 
 {-
     • Definieren Sie für den Datentyp XML eine Faltung.
@@ -76,18 +76,23 @@ Konstruktoren
 
   foldXML :: (String -> b) -> (String -> [Attr] -> [XML] -> b) -> XML -> b
 -}
-foldXML :: (String -> b) -> (String -> [Attr] -> [XML] -> b) -> XML -> b
-foldXML textNode _ (TextNode text)    = textNode text
-foldXML textNode tag (Tag text as xs) = tag text as xs
+foldXML :: (String -> a) -> (String -> [Attr] -> [a] -> a) -> XML -> a
+foldXML text tag (TextNode str) = text str
+foldXML text tag (Tag name attrs xmls) =
+  tag name attrs (map (foldXML text tag) xmls)
 
 {-
 • Implementieren Sie die Funktion pretty aus der 4. Übung mit Hilfe der Faltung.
 -}
 pretty :: XML -> String
-pretty =
-  foldXML id (\x as xs -> openTag x as ++ unwords (map pretty xs) ++ closeTag x)
+pretty xml = foldXML id prettyNode xml
   where
-    openTag x as = "<" ++ x ++ generateAttr as ++ ">"
-    closeTag x = "</" ++ x ++ ">"
-    generateAttr as =
-      unwords (map (\(Attr x y) -> " " ++ x ++ "=\'" ++ y ++ "\' ") as)
+    prettyNode name attrs strs =
+      "<" ++
+      name ++
+      " " ++
+      unwords (map prettyAttr attrs) ++
+      ">" ++ concat strs ++ "</" ++ name ++ ">"
+
+prettyAttr :: Attr -> String
+prettyAttr (Attr name value) = name ++ "=\"" ++ value ++ "\""

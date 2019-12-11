@@ -26,11 +26,14 @@ data Expr
   deriving (Show)
 
 eval :: Expr -> Maybe Int
-eval (BinApp Add ex1 ex2) = eval ((eval ex1) + (eval ex2))
-eval (BinApp Sub ex1 ex2) = eval ((eval ex1) - (eval ex2))
-eval (BinApp Mul ex1 ex2) = eval ((eval ex1) * (eval ex2))
-eval (BinApp Div ex1 ex2) = eval (div (eval ex1) (eval ex2))
-eval (Num x)              = Just x
+eval (BinApp Add ex1 ex2) = ((eval ex1) + (eval ex2))
+eval (BinApp Sub ex1 ex2) = ((eval ex1) - (eval ex2))
+eval (BinApp Mul ex1 ex2) = ((eval ex1) * (eval ex2))
+eval (BinApp Div ex1 ex2) =
+  if (eval ex2) == 0
+    then Nothing
+    else (div (eval ex1) (eval ex2))
+eval (Num x) = Just x
 {-
   • Nutzen Sie die Faltung für den Datentyp Expr, um eine Funktion eval0 :: Expr → Maybe Int zu definieren,
     die sich genau so verhält, wie die zuvor definierte Funktion.
